@@ -101,28 +101,20 @@ public class Instrument {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Instrument that = (Instrument) o;
-        return id == that.id && Objects.equals(name, that.name) && type == that.type && Objects.equals(inventoryNumber, that.inventoryNumber) && Objects.equals(location, that.location) && status == that.status && Objects.equals(ownerUsername, that.ownerUsername) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt);
+        return id == that.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, type, inventoryNumber, location, status, ownerUsername, createdAt, updatedAt);
+        return Objects.hash(id);
     }
 
     @Override
     public String toString() {
-        return "Instrument{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", type=" + type +
-                ", inventoryNumber='" + inventoryNumber + '\'' +
-                ", location='" + location + '\'' +
-                ", status=" + status +
-                ", ownerUsername='" + ownerUsername + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
+        return String.format("ID: %d | Name: %-15s | Type: %-10s | Status: %-10s | Loc: %s",
+                id, name, type, status, location);
     }
 }
