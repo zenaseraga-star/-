@@ -1,5 +1,5 @@
 package ru.itmo.ArsikAndEva.validator;
-import model;
+import model.Booking;
 import exception.ValidationException;
 
 public class BookingValidator implements Validator<Booking> {
@@ -21,3 +21,4 @@ public class BookingValidator implements Validator<Booking> {
 
         
     }
+
