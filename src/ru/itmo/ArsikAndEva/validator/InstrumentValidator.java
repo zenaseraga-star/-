@@ -6,12 +6,12 @@ import ru.itmo.ArsikAndEva.exception.ValidationException;
 public class InstrumentValidator implements Validator<Instrument> {
 
     @Override
-    public void validate(Instrument instrument) {
+    public void validate(Instrument instrument) throws ValidationException {
         if (instrument == null) {
             throw new ValidationException("объект прибора не может быть null");
         }
 
-        if (instrument.getName() == null || instrument.getName().isEmpty()) {
+        if (instrument.getName() == null || instrument.getName().isBlank()) {
             throw new ValidationException("название не может быть пустым");
         }
         if (instrument.getName().length() > 128) {
@@ -26,7 +26,7 @@ public class InstrumentValidator implements Validator<Instrument> {
             throw new ValidationException("инвентарный номер не может быть длиннее 32 символов");
         }
 
-        if (instrument.getLocation() == null || instrument.getLocation().isEmpty()) {
+        if (instrument.getLocation() == null || instrument.getLocation().isBlank()) {
             throw new ValidationException("нужно написать, где сейчас находится " + instrument.getName());
         }
         if (instrument.getLocation().length() > 64) {
@@ -37,7 +37,7 @@ public class InstrumentValidator implements Validator<Instrument> {
             throw new ValidationException("статус прибора должен быть указан");
         }
 
-        if (instrument.getOwnerUsername() == null || instrument.getOwnerUsername().isEmpty()) {
+        if (instrument.getOwnerUsername() == null || instrument.getOwnerUsername().isBlank()) {
             throw new ValidationException("владелец записи должен быть указан");
         }
     }
