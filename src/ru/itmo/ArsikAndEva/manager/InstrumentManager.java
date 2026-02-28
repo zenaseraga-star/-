@@ -4,6 +4,7 @@ import ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
 import ru.itmo.ArsikAndEva.model.Instrument;
 import ru.itmo.ArsikAndEva.validator.InstrumentValidator;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -37,6 +38,7 @@ public class InstrumentManager {
         instrumentValidator.validate(instrument);
         instrument.setId(id);
         instruments.put(id, instrument);
+        instrument.setUpdatedAt(Instant.now());
     }
 
     public void remove(Long id){
