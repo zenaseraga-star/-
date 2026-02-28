@@ -7,7 +7,7 @@ import java.time.Instant;
 
 public final class Instrument {
     // Уникальный номер прибора. Программа назначает сама.
-    private final long id;
+    private final long instrumentId;
 
 // Название прибора (чтобы человек понял, что это). Нельзя пустое. До 128 символов.
     private String name;
@@ -34,8 +34,8 @@ public final class Instrument {
     private Instant updatedAt;
 
 
-    public Instrument(long id, String name, InstrumentType type, String inventoryNumber, String location, InstrumentStatus status, String ownerUsername, Instant createdAt, Instant updatedAt) {
-        this.id = id;
+    public Instrument(long instrumentId, String name, InstrumentType type, String inventoryNumber, String location, InstrumentStatus status, String ownerUsername, Instant createdAt, Instant updatedAt) {
+        this.instrumentId = instrumentId;
         this.setName(name);
         this.type = type;
         this.inventoryNumber = inventoryNumber;
@@ -47,8 +47,8 @@ public final class Instrument {
     }
 
 
-    public long getId() {
-        return id;
+    public long getinstrumentId() {
+        return instrumentId;
     }
 
     public String getName() {
@@ -109,3 +109,4 @@ public final class Instrument {
         this.updatedAt = updatedAt;
     }
 }
+
