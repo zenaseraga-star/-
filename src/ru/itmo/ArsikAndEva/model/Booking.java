@@ -1,39 +1,46 @@
-package model;
+package ru.itmo.ArsikAndEva.model;
+
+import ru.itmo.ArsikAndEva.model.enums.BookingStatus;
+
 import java.time.Instant;
+import java.util.Objects;
+
 public final class Booking {
-// Уникальный номер бронирования. Программа назначает сама.
-private  final long id;
+    // Уникальный номер бронирования. Программа назначает сама.
+    private long id;
 
-// Какой прибор бронируют (id прибора).
-// Должен ссылаться на реально существующий Instrument.
-private  long instrumentId;
-// Время начала бронирования.
-private  Instant startAt;
-// Время конца бронирования.
-private Instant endAt;
-// Статус бронирования: ACTIVE или CANCELLED.
-private BookingStatus status;
-// Кто забронировал (логин). На ранних этапах можно "SYSTEM".
-private String ownerUsername;
-// Когда создали бронь. Программа ставит автоматически.
-private final Instant createdAt;
-// Когда обновляли. Программа обновляет автоматически.
-private  Instant updatedAt;
+    // Какой прибор бронируют (id прибора).
+    // Должен ссылаться на реально существующий Instrument.
+    private long instrumentId;
+    // Время начала бронирования.
+    private Instant startAt;
+    // Время конца бронирования.
+    private Instant endAt;
+    // Статус бронирования: ACTIVE или CANCELLED.
+    private BookingStatus status;
+    // Кто забронировал (логин). На ранних этапах можно "SYSTEM".
+    private String ownerUsername;
+    // Когда создали бронь. Программа ставит автоматически.
+    private final Instant createdAt;
+    // Когда обновляли. Программа обновляет автоматически.
+    private  Instant updatedAt;
 
-public Booking( long id, long instrumentId,  Instant startAt, Instant endAt, BookingStatus status, String ownerUsername, Instant createdAt, Instant updatedAt){
-this.id = id;
-this.instrumentId = instrumentId;
-this.startAt = startAt;
-this.endAt = endAt;
-this.status = status;
-this.ownerUsername = ownerUsername;
-this.createdAt = createdAt;
-this.updatedAt = updatedAt;
-}
-public Booking(long id, Instant createdAt){
-    this.id = id;
-    this.createdAt = createdAt;
-}
+    public Booking( long id, long instrumentId,  Instant startAt, Instant endAt, BookingStatus status, String ownerUsername, Instant createdAt, Instant updatedAt){
+        this.id = id;
+        this.instrumentId = instrumentId;
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.status = status;
+        this.ownerUsername = ownerUsername;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+
+    public Booking(long id, Instant createdAt){
+        this.id = id;
+        this.createdAt = createdAt;
+    }
 
     public long getId() {
         return id;
@@ -89,5 +96,25 @@ public Booking(long id, Instant createdAt){
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Booking booking = (Booking) o;
+        return id == booking.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Booking #%d | Inst: %d | Start: %s | End: %s | Status: %s",
+                id, instrumentId, startAt, endAt, status);
     }
 }
