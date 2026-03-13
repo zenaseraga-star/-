@@ -25,7 +25,7 @@ public class CheckoutManager {
     public void add(Checkout checkout){
         validator.validate(checkout);
 
-        Instrument instrument = instrumentManager.getById(checkout.getInstrumentId());
+        Instrument instrument = instrumentManager.getById(checkout.getInstrumentId()).orElseThrow(() -> new EntityNotFoundException("Прибор с таким id не существует"));
 
         if (instrument.getStatus() == InstrumentStatus.OUT_OF_SERVICE){
             throw new ValidationException("Инструмент сломан, поэтому брать его смысла нет");
@@ -43,10 +43,8 @@ public class CheckoutManager {
         checkoutMap.put(id, checkout);
     }
 
-    public Checkout getById(Long id){
-        if (!checkoutMap.containsKey(id))
-            throw new EntityNotFoundException("Выдача с номером " + id + " не найдена");
-        return checkoutMap.get(id);
+    public Optional<Checkout> getById(Long id){
+        return Optional.ofNullable(checkoutMap.get(id));
     }
 
     public List<Checkout> getAll(){
@@ -57,7 +55,7 @@ public class CheckoutManager {
         if (!checkoutMap.containsKey(id))
             throw new EntityNotFoundException("Выдача с номером " + id + "не была найдена");
 
-        instrumentManager.getById(checkout.getInstrumentId());
+        instrumentManager.getById(checkout.getInstrumentId()).orElseThrow(() -> new EntityNotFoundException("Прибора с таким id не существует"));
 
         validator.validate(checkout);
         checkout.setId(id);
@@ -72,17 +70,16 @@ public class CheckoutManager {
 
 
     public void returnInstrument(Long checkoutId, ReturnCondition condition){
-        if (!checkoutMap.containsKey(checkoutId))
-            throw new EntityNotFoundException("Выдача с номером " + checkoutId + " не найден");
+        Checkout checkout = getById(checkoutId).orElseThrow(() -> new EntityNotFoundException("Выдача с таким id не существует"));
 
-        if (checkoutMap.get(checkoutId).getReturnedAt() != null)
+        if (checkout.getReturnedAt() != null)
             throw new ValidationException("Прибор уже вернули");
 
-        checkoutMap.get(checkoutId).setReturnedAt(Instant.now());
-        checkoutMap.get(checkoutId).setReturnCondition(condition);
+        checkout.setReturnedAt(Instant.now());
+        checkout.setReturnCondition(condition);
 
         if (condition == ReturnCondition.DAMAGED){
-            Instrument instrument = instrumentManager.getById(checkoutMap.get(checkoutId).getInstrumentId());
+            Instrument instrument = instrumentManager.getById(checkout.getInstrumentId()).orElseThrow(() -> new EntityNotFoundException("Прибор не найден"));
             instrument.setStatus(InstrumentStatus.OUT_OF_SERVICE);
             instrumentManager.update(instrument.getId(), instrument);
         }
