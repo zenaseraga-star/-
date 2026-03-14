@@ -9,7 +9,7 @@ import ru.itmo.ArsikAndEva.validator.BookingValidator;
 
 public class BookRescheduleCommand implements Command {
     BookingManager bookingManager;
-    Scanner scanner;
+    
     public BookRescheduleCommand(BookingManager bookingManager){
         this.bookingManager = bookingManager;
     }
