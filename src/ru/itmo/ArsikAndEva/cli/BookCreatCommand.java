@@ -20,10 +20,10 @@ public class BookCreatCommand implements Command {
     @Override
     public void execute(String[] args) {
         try {
-            if (args.length < 1) {
+            if (args.length < 2) {
                 throw new ValidationException(" Введите id инструмента");
             }
-            long instrumentId = Long.parseLong(args[0]);
+            long instrumentId = Long.parseLong(args[1]);
             System.out.println(" Начало (YYYY-MM-DD HH:MM): ");
             String startAt = scanner.nextLine();
             BookingValidator.validateTime(startAt);
