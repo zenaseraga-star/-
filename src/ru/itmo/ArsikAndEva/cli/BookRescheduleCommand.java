@@ -16,13 +16,13 @@ public class BookRescheduleCommand implements Command {
     @Override
     public void execute(String[] args){
         try{
-            if(args.length != 3){
+            if(args.length != 4){
                 throw new ValidationException( " Введите ID, время начала, время конца ");
             }
-            long bookId = Long.parseLong(args[0]);
-            BookingValidator.validateTime(args[1]);
+            long bookId = Long.parseLong(args[1]);
             BookingValidator.validateTime(args[2]);
-            bookingManager.bookReschedule(bookId, args[1], args[2]);
+            BookingValidator.validateTime(args[3]);
+            bookingManager.bookReschedule(bookId, args[2], args[3]);
             System.out.println(" OK Бронь перенесена ");
         }
         catch  (NumberFormatException e) {
