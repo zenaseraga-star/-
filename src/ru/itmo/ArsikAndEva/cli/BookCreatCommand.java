@@ -1,11 +1,10 @@
 package ru.itmo.ArsikAndEva.cli;
 
-
-
 import ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
 import ru.itmo.ArsikAndEva.exception.ValidationException;
 import ru.itmo.ArsikAndEva.manager.BookingManager;
 import ru.itmo.ArsikAndEva.model.Booking;
+import ru.itmo.ArsikAndEva.validator.BookingValidator;
 
 import java.util.Scanner;
 
@@ -27,8 +26,10 @@ public class BookCreatCommand implements Command {
             long instrumentId = Long.parseLong(args[0]);
             System.out.println(" Начало (YYYY-MM-DD HH:MM): ");
             String startAt = scanner.nextLine();
+            BookingValidator.validateTime(startAt);
             System.out.println(" Конец  (YYYY-MM-DD HH:MM): ");
             String endAt = scanner.nextLine();
+            BookingValidator.validateTime(endAt);
             long bookId = bookingManager.createBook(instrumentId, startAt, endAt, "System");
             System.out.println(" OK book_id =" + bookId);
         } catch (NumberFormatException e) {
