@@ -4,15 +4,13 @@ import ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
 import ru.itmo.ArsikAndEva.exception.ValidationException;
 import ru.itmo.ArsikAndEva.manager.BookingManager;
 
-imporru.java.util.Scanner;
 
 public class BookCancelCommand implements Command{
     private BookingManager bookingManager;
-    private Scanner scanner;
+    
 
-    public BookCancelCommand(BookingManager bookingManager, Scanner scanner) {
+    public BookCancelCommand(BookingManager bookingManager) {
         this.bookingManager = bookingManager;
-        this.scanner = scanner;
     }
     @Override
     public  void execute(String[] args){
