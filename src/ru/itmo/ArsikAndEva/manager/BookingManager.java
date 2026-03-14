@@ -108,19 +108,14 @@ public Booking getBookById(long bookId){
         throw new EntityNotFoundException(" Брони с id " + bookId + " нет в списке");
     return books.get(bookId);
 }
-public Booking updateBooking(long Id,Optional <String> startAt, Optional<String> endAt,Optional <String>owner) {
-    InstrumentManager im = new InstrumentManager();
-    Optional<Instant> start = startAt.map(s -> Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.UTC).parse(s)));
-    Optional<Instant> end = endAt.map(s -> Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.UTC).parse(s)));
-
+public Booking updateBooking(long Id,String startAt, String endAt,String owner) {
+    Instant start  = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.UTC).parse(startAt));
+    Instant end = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.UTC).parse(endAt));
     Booking book = getBookById(Id);
     BookingValidator.validate(book);
-    Instant newStartAt = start.orElse(book.getStartAt());
-    Instant newEndAt = end.orElse(book.getEndAt());
-    String newOwner = owner.orElse(book.getOwnerUsername());
-    book.setStartAt(newStartAt);
-    book.setEndAt(newEndAt);
-    book.setOwnerUsername(newOwner);
+    book.setStartAt(start);
+    book.setEndAt(end);
+    book.setOwnerUsername(owner);
     BookingValidator.validate(book);
 return book;
 }
