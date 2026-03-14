@@ -6,14 +6,12 @@ import ru.itmo.ArsikAndEva.exception.ValidationException;
 import ru.itmo.ArsikAndEva.manager.BookingManager;
 import ru.itmo.ArsikAndEva.validator.BookingValidator;
 
-import java.util.Scanner;
 
 public class BookRescheduleCommand implements Command {
     BookingManager bookingManager;
     Scanner scanner;
-    public BookRescheduleCommand(BookingManager bookingManager, Scanner scanner){
+    public BookRescheduleCommand(BookingManager bookingManager){
         this.bookingManager = bookingManager;
-        this.scanner = scanner;
     }
     @Override
     public void execute(String[] args){
