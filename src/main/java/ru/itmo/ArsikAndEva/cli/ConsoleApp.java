@@ -25,7 +25,7 @@ public class ConsoleApp {
 
 
         commands = new HashMap<>();
-        commands.put("checkout_take", new CheckoutTakeCommand(checkoutManager, scanner));
+        commands.put("checkout_take", new CheckoutTakeCommand(instrumentManager, checkoutManager, scanner));
         commands.put("book_create", new BookCreatCommand(bookingManager, scanner));
         commands.put("book_list", new BookListCommand(bookingManager));
         commands.put("book_reschedule", new BookRescheduleCommand(bookingManager));
@@ -35,20 +35,21 @@ public class ConsoleApp {
         commands.put("checkout_list", new CheckoutListCommand(checkoutManager));
         commands.put("inst_available", new InstAvailableCommand(instrumentManager, bookingManager));
         commands.put("checkout_show", new CheckoutShowCommand(checkoutManager));
-        commands.put("inst_add", new InstAddCommand(instrumentManager, scanner));
+        commands.put("inst_add", new InstAddCommand(instrumentManager));
         commands.put("help", new HelpCommand());
-        commands.put("exit", new ExitCommand());
-
     }
 
 
     public void start(){
         System.out.println("Добро пожаловать в наш проект ArsikAndEva!!");
         System.out.println("Чтобы ознакомиться со списком команд напишите 'help'");
+        boolean isRunnable = true;
 
-        while (true){
+        while (isRunnable){
+            System.out.print("Введите команду: ");
+            if (!scanner.hasNext()) break;
+
             try {
-                System.out.print("Введите команду: ");
                 String input = scanner.nextLine();
 
                 if (input.isBlank()){
@@ -58,9 +59,17 @@ public class ConsoleApp {
 
                 String[] args = input.trim().split(" ");
 
-                Command command = commands.get(args[0]);
+                String cmd = args[0];
+
+                if (cmd.equals("exit")){
+                    isRunnable = false;
+                    continue;
+                }
+
+
+                Command command = commands.get(cmd);
                 if (command == null){
-                    System.out.println("Команды " + args[0] + "не существует. Чтобы ознакомиться со списком команд введите help");
+                    System.out.println("Команда " + args[0] + " не найдена. Чтобы ознакомиться со списком команд введите help");
                     continue;
                 }
                 command.execute(args);
@@ -68,5 +77,6 @@ public class ConsoleApp {
                 System.out.println(e.getMessage());;
             }
         }
+        System.out.println("Работа завершена, пока!");
     }
 }
