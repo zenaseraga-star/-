@@ -1,9 +1,9 @@
-package ru.itmo.ArsikAndEva.cli;
-import ru.itmo.ArsikAndEva.manager.CheckoutManager;
-import ru.itmo.ArsikAndEva.manager.InstrumentManager;
-import ru.itmo.ArsikAndEva.model.Checkout;
-import ru.itmo.ArsikAndEva.model.Instrument;
-import ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
+package main.java.ru.itmo.ArsikAndEva.cli;
+import main.java.ru.itmo.ArsikAndEva.manager.CheckoutManager;
+import main.java.ru.itmo.ArsikAndEva.manager.InstrumentManager;
+import main.java.ru.itmo.ArsikAndEva.model.Checkout;
+import main.java.ru.itmo.ArsikAndEva.model.Instrument;
+import main.java.ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
 
 import java.time.Instant;
 import java.util.Scanner;

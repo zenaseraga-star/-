@@ -1,4 +1,4 @@
-package ru.itmo.ArsikAndEva.model.enums;
+package main.java.ru.itmo.ArsikAndEva.model.enums;
 
 public enum InstrumentStatus {
     ACTIVE,

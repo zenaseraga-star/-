@@ -1,13 +1,13 @@
-package ru.itmo.ArsikAndEva.cli;
+package main.java.ru.itmo.ArsikAndEva.cli;
 
-import ru.itmo.ArsikAndEva.exception.ValidationException;
-import ru.itmo.ArsikAndEva.manager.BookingManager;
+import main.java.ru.itmo.ArsikAndEva.exception.ValidationException;
+import main.java.ru.itmo.ArsikAndEva.manager.BookingManager;
 
-import ru.itmo.ArsikAndEva.manager.InstrumentManager;
-import ru.itmo.ArsikAndEva.model.Booking;
-import ru.itmo.ArsikAndEva.model.Instrument;
-import ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
-import ru.itmo.ArsikAndEva.model.enums.InstrumentType;
+import main.java.ru.itmo.ArsikAndEva.manager.InstrumentManager;
+import main.java.ru.itmo.ArsikAndEva.model.Booking;
+import main.java.ru.itmo.ArsikAndEva.model.Instrument;
+import main.java.ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
+import main.java.ru.itmo.ArsikAndEva.model.enums.InstrumentType;
 
 import java.time.Instant;
 import java.time.ZoneOffset;

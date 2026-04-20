@@ -1,4 +1,4 @@
-package ru.itmo.ArsikAndEva.exception;
+package main.java.ru.itmo.ArsikAndEva.exception;
 
 public class EntityNotFoundException extends RuntimeException {
     public EntityNotFoundException(String message) {

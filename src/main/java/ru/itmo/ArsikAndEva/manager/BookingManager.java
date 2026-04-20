@@ -1,18 +1,18 @@
-package ru.itmo.ArsikAndEva.manager;
+package main.java.ru.itmo.ArsikAndEva.manager;
 
-import ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
-import ru.itmo.ArsikAndEva.exception.ValidationException;
-import ru.itmo.ArsikAndEva.model.Booking;
-
-import java.time.ZoneOffset;
-import java.time.format.*;
-import java.util.*;
-
-import ru.itmo.ArsikAndEva.model.enums.BookingStatus;
+import main.java.ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
+import main.java.ru.itmo.ArsikAndEva.exception.ValidationException;
+import main.java.ru.itmo.ArsikAndEva.model.Booking;
+import main.java.ru.itmo.ArsikAndEva.model.enums.BookingStatus;
+import main.java.ru.itmo.ArsikAndEva.validator.BookingValidator;
 
 import java.time.Instant;
-
-import ru.itmo.ArsikAndEva.validator.BookingValidator;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class BookingManager {
     private Map<Long, Booking> books = new HashMap<>();
@@ -29,8 +29,8 @@ public class BookingManager {
         instrumentManager.getById(instrumentId).orElseThrow(() -> new EntityNotFoundException("Инструмент с таким id не найден"));
 
 
-        Instant start = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.UTC).parse(startAt));
-        Instant end = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.UTC).parse(endAt));
+        Instant start = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.systemDefault()).parse(startAt));
+        Instant end = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.systemDefault()).parse(endAt));
         if (end.isBefore(start)) {
             throw new ValidationException("Конец не может быть раньше начала");
         }
@@ -59,7 +59,7 @@ public class BookingManager {
         if (date == null) {
             throw new ValidationException(" Неверный формат даты");
         } else {
-            Instant dat = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.UTC).parse(date));
+            Instant dat = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.systemDefault()).parse(date));
 
             List<Booking> res = new ArrayList<>();
             for (Booking book : books.values()) {
@@ -92,8 +92,8 @@ public class BookingManager {
     }
 
     public void bookReschedule(long bookId, String startAt, String endAt) {
-        Instant start = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.UTC).parse(startAt));
-        Instant end = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.UTC).parse(endAt));
+        Instant start = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.systemDefault()).parse(startAt));
+        Instant end = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.systemDefault()).parse(endAt));
         if (start.isAfter(end)) {
             throw new ValidationException(" Конец не может быть раньше начала ");
         }

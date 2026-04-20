@@ -1,9 +1,9 @@
-package ru.itmo.ArsikAndEva.cli;
+package main.java.ru.itmo.ArsikAndEva.cli;
 
-import ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
-import ru.itmo.ArsikAndEva.exception.ValidationException;
-import ru.itmo.ArsikAndEva.manager.CheckoutManager;
-import ru.itmo.ArsikAndEva.model.Checkout;
+import main.java.ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
+import main.java.ru.itmo.ArsikAndEva.exception.ValidationException;
+import main.java.ru.itmo.ArsikAndEva.manager.CheckoutManager;
+import main.java.ru.itmo.ArsikAndEva.model.Checkout;
 
 public class CheckoutShowCommand implements Command{
     private final CheckoutManager checkoutManager;

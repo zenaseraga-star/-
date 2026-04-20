@@ -1,9 +1,9 @@
-package ru.itmo.ArsikAndEva.cli;
+package main.java.ru.itmo.ArsikAndEva.cli;
 
-import ru.itmo.ArsikAndEva.manager.InstrumentManager;
-import ru.itmo.ArsikAndEva.model.Instrument;
-import ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
-import ru.itmo.ArsikAndEva.model.enums.InstrumentType;
+import main.java.ru.itmo.ArsikAndEva.manager.InstrumentManager;
+import main.java.ru.itmo.ArsikAndEva.model.Instrument;
+import main.java.ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
+import main.java.ru.itmo.ArsikAndEva.model.enums.InstrumentType;
 
 import java.util.Scanner;
 

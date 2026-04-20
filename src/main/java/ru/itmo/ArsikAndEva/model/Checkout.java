@@ -1,6 +1,6 @@
-package ru.itmo.ArsikAndEva.model;
+package main.java.ru.itmo.ArsikAndEva.model;
 
-import ru.itmo.ArsikAndEva.model.enums.ReturnCondition;
+import main.java.ru.itmo.ArsikAndEva.model.enums.ReturnCondition;
 
 import java.time.Instant;
 import java.util.Objects;

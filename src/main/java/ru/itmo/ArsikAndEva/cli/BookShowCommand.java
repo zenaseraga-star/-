@@ -1,18 +1,19 @@
-package ru.itmo.ArsikAndEva.cli;
+package main.java.ru.itmo.ArsikAndEva.cli;
 
 
-import ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
-import  ru.itmo.ArsikAndEva.exception.ValidationException;
-import  ru.itmo.ArsikAndEva.manager.BookingManager;
+import main.java.ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
+import  main.java.ru.itmo.ArsikAndEva.exception.ValidationException;
+import  main.java.ru.itmo.ArsikAndEva.manager.BookingManager;
 
 import java.util.Scanner;
 
 public class BookShowCommand implements Command {
     BookingManager bookingManager;
-    Scanner scanner;
+
 
     public BookShowCommand(BookingManager bookingManager) {
         this.bookingManager = bookingManager;
+
     }
 
     @Override

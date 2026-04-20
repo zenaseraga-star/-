@@ -1,6 +1,6 @@
-package ru.itmo.ArsikAndEva.validator;
-import ru.itmo.ArsikAndEva.model.Booking;
-import ru.itmo.ArsikAndEva.exception.ValidationException;
+package main.java.ru.itmo.ArsikAndEva.validator;
+import main.java.ru.itmo.ArsikAndEva.model.Booking;
+import main.java.ru.itmo.ArsikAndEva.exception.ValidationException;
 
 import java.time.DateTimeException;
 import java.time.LocalDateTime;

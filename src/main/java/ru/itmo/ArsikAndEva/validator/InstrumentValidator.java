@@ -1,7 +1,7 @@
-package ru.itmo.ArsikAndEva.validator;
+package main.java.ru.itmo.ArsikAndEva.validator;
 
-import ru.itmo.ArsikAndEva.model.Instrument;
-import ru.itmo.ArsikAndEva.exception.ValidationException;
+import main.java.ru.itmo.ArsikAndEva.model.Instrument;
+import main.java.ru.itmo.ArsikAndEva.exception.ValidationException;
 
 public class InstrumentValidator implements Validator<Instrument> {
 

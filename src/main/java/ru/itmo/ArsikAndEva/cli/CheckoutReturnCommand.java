@@ -1,13 +1,13 @@
-package ru.itmo.ArsikAndEva.cli;
+package main.java.ru.itmo.ArsikAndEva.cli;
 
-import ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
-import ru.itmo.ArsikAndEva.exception.ValidationException;
-import ru.itmo.ArsikAndEva.manager.CheckoutManager;
+import main.java.ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
+import main.java.ru.itmo.ArsikAndEva.exception.ValidationException;
+import main.java.ru.itmo.ArsikAndEva.manager.CheckoutManager;
 
-import ru.itmo.ArsikAndEva.manager.InstrumentManager;
-import ru.itmo.ArsikAndEva.model.Instrument;
-import ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
-import ru.itmo.ArsikAndEva.model.enums.ReturnCondition;
+import main.java.ru.itmo.ArsikAndEva.manager.InstrumentManager;
+import main.java.ru.itmo.ArsikAndEva.model.Instrument;
+import main.java.ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
+import main.java.ru.itmo.ArsikAndEva.model.enums.ReturnCondition;
 
 
 import java.util.Scanner;

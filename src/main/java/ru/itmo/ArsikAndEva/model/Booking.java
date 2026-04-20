@@ -1,8 +1,10 @@
-package ru.itmo.ArsikAndEva.model;
+package main.java.ru.itmo.ArsikAndEva.model;
 
-import ru.itmo.ArsikAndEva.model.enums.BookingStatus;
+import main.java.ru.itmo.ArsikAndEva.model.enums.BookingStatus;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public final class Booking {
@@ -114,7 +116,10 @@ public final class Booking {
 
     @Override
     public String toString() {
+        DateTimeFormatter form = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault());
+        String formattedStart = form.format(startAt);
+        String formattedEnd = form.format(endAt);
         return String.format("Booking #%d | Inst: %d | Start: %s | End: %s | Status: %s",
-                id, instrumentId, startAt, endAt, status);
+                id, instrumentId, formattedStart, formattedEnd, status);
     }
 }

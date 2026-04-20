@@ -1,6 +1,6 @@
-package ru.itmo.ArsikAndEva.validator;
-import ru.itmo.ArsikAndEva.model.Checkout;
-import ru.itmo.ArsikAndEva.exception.ValidationException;
+package main.java.ru.itmo.ArsikAndEva.validator;
+import main.java.ru.itmo.ArsikAndEva.model.Checkout;
+import main.java.ru.itmo.ArsikAndEva.exception.ValidationException;
 
 public class CheckoutValidator implements Validator<Checkout> {
     @Override

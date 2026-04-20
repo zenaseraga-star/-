@@ -1,9 +1,9 @@
-package ru.itmo.ArsikAndEva.cli;
+package main.java.ru.itmo.ArsikAndEva.cli;
 
-import ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
-import ru.itmo.ArsikAndEva.exception.ValidationException;
-import ru.itmo.ArsikAndEva.manager.BookingManager;
-import ru.itmo.ArsikAndEva.validator.BookingValidator;
+import main.java.ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
+import main.java.ru.itmo.ArsikAndEva.exception.ValidationException;
+import main.java.ru.itmo.ArsikAndEva.manager.BookingManager;
+import main.java.ru.itmo.ArsikAndEva.validator.BookingValidator;
 
 import java.util.Scanner;
 
@@ -11,7 +11,7 @@ public class BookCreatCommand implements Command {
     private BookingManager bookingManager;
     private Scanner scanner;
 
-    public BookCreatCommand(BookingManager bookingManager, Scanner scanner) {
+    public BookCreatCommand(BookingManager bookingManager, Scanner scanner)  {
         this.bookingManager = bookingManager;
         this.scanner = scanner;
     }
@@ -23,12 +23,34 @@ public class BookCreatCommand implements Command {
                 throw new ValidationException(" Введите id инструмента");
             }
             long instrumentId = Long.parseLong(args[1]);
+            String startAt = null;
             System.out.println("Начало (YYYY-MM-DD HH:MM): ");
-            String startAt = scanner.nextLine().trim();
-            BookingValidator.validateTime(startAt);
+
+            while(startAt == null){
+
+                try{
+                    String zn = scanner.nextLine().trim();
+                    BookingValidator.validateTime(zn);
+                    startAt = zn;
+
+                }
+                catch (IllegalArgumentException | ValidationException e ){
+                    System.out.println("Введите время начала правильно!");
+                }
+
+            }
+            String endAt = null;
             System.out.println("Конец  (YYYY-MM-DD HH:MM): ");
-            String endAt = scanner.nextLine().trim();
-            BookingValidator.validateTime(endAt);
+            while (endAt == null){
+                try {
+                    String zn = scanner.nextLine().trim();
+                    BookingValidator.validateTime(zn);
+                    endAt = zn;
+                }
+                catch (IllegalArgumentException | ValidationException e ){
+                    System.out.println("Введите время конца правильно!");
+                }
+            }
             long bookId = bookingManager.createBook(instrumentId, startAt, endAt, "System");
             System.out.println(" OK book_id =" + bookId);
 
