@@ -16,7 +16,7 @@ public class HelpCommand implements Command {
         System.out.println("  checkout_take <instrument_id>   - взять прибор");
         System.out.println("  checkout_return <checkout_id>   - вернуть прибор");
         System.out.println("  checkout_list [--open-only]     - список выдач");
-        System.out.println("  inst_available <type> <start> <end> - доступные приборы");
+        System.out.println("  inst_available - доступные приборы");
         System.out.println("  help                            - список команд");
         System.out.println("  exit                            - выход");
     }
