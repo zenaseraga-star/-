@@ -1,6 +1,6 @@
-package main.java.ru.itmo.ArsikAndEva.model;
+package ru.itmo.ArsikAndEva.model;
 
-import main.java.ru.itmo.ArsikAndEva.model.enums.BookingStatus;
+import ru.itmo.ArsikAndEva.model.enums.BookingStatus;
 
 import java.time.Instant;
 import java.time.ZoneId;

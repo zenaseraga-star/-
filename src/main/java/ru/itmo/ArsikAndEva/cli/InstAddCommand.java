@@ -1,9 +1,9 @@
-package main.java.ru.itmo.ArsikAndEva.cli;
+package ru.itmo.ArsikAndEva.cli;
 
-import main.java.ru.itmo.ArsikAndEva.manager.InstrumentManager;
-import main.java.ru.itmo.ArsikAndEva.model.Instrument;
-import main.java.ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
-import main.java.ru.itmo.ArsikAndEva.model.enums.InstrumentType;
+import ru.itmo.ArsikAndEva.manager.InstrumentManager;
+import ru.itmo.ArsikAndEva.model.Instrument;
+import ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
+import ru.itmo.ArsikAndEva.model.enums.InstrumentType;
 
 import java.util.Scanner;
 
@@ -50,7 +50,7 @@ public class InstAddCommand implements Command{
         while (instrumentStatus == null){
             System.out.print("Введите статус прибора (ACTIVE или OUT_OF_SERVICE): ");
             try {
-                instrumentStatus = InstrumentStatus.valueOf(scanner.nextLine().toUpperCase());
+                instrumentStatus = InstrumentStatus.valueOf(scanner.nextLine().trim().toUpperCase());
             } catch (IllegalArgumentException e) {
                 System.out.println("Неправильный формат статуса, попробуйте еще раз!");
             }
@@ -58,5 +58,7 @@ public class InstAddCommand implements Command{
 
         Instrument instrument = new Instrument(name, instrumentType, inventoryNumber, location, instrumentStatus);
         instrumentManager.add(instrument);
+
+        System.out.println("Инструмент добавлен! Ура-ура! Вперед-вперед! Id инструмента: " + instrument.getId());
     }
 }

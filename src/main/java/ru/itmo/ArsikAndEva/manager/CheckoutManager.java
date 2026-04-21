@@ -1,11 +1,11 @@
-package main.java.ru.itmo.ArsikAndEva.manager;
-import main.java.ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
-import main.java.ru.itmo.ArsikAndEva.exception.ValidationException;
-import main.java.ru.itmo.ArsikAndEva.model.Checkout;
-import main.java.ru.itmo.ArsikAndEva.model.Instrument;
-import main.java.ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
-import main.java.ru.itmo.ArsikAndEva.model.enums.ReturnCondition;
-import main.java.ru.itmo.ArsikAndEva.validator.CheckoutValidator;
+package ru.itmo.ArsikAndEva.manager;
+import ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
+import ru.itmo.ArsikAndEva.exception.ValidationException;
+import ru.itmo.ArsikAndEva.model.Checkout;
+import ru.itmo.ArsikAndEva.model.Instrument;
+import ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
+import ru.itmo.ArsikAndEva.model.enums.ReturnCondition;
+import ru.itmo.ArsikAndEva.validator.CheckoutValidator;
 
 import java.time.Instant;
 import java.util.*;

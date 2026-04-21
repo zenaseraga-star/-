@@ -1,10 +1,10 @@
-package main.java.ru.itmo.ArsikAndEva.manager;
+package ru.itmo.ArsikAndEva.manager;
 
-import main.java.ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
-import main.java.ru.itmo.ArsikAndEva.exception.ValidationException;
-import main.java.ru.itmo.ArsikAndEva.model.Booking;
-import main.java.ru.itmo.ArsikAndEva.model.enums.BookingStatus;
-import main.java.ru.itmo.ArsikAndEva.validator.BookingValidator;
+import ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
+import ru.itmo.ArsikAndEva.exception.ValidationException;
+import ru.itmo.ArsikAndEva.model.Booking;
+import ru.itmo.ArsikAndEva.model.enums.BookingStatus;
+import ru.itmo.ArsikAndEva.validator.BookingValidator;
 
 import java.time.Instant;
 import java.time.ZoneOffset;

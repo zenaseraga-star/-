@@ -1,7 +1,7 @@
-package main.java.ru.itmo.ArsikAndEva.cli;
+package ru.itmo.ArsikAndEva.cli;
 
-import main.java.ru.itmo.ArsikAndEva.manager.CheckoutManager;
-import main.java.ru.itmo.ArsikAndEva.model.Checkout;
+import ru.itmo.ArsikAndEva.manager.CheckoutManager;
+import ru.itmo.ArsikAndEva.model.Checkout;
 
 import java.util.List;
 

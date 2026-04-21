@@ -1,8 +1,8 @@
-package main.java.ru.itmo.ArsikAndEva.cli;
+package ru.itmo.ArsikAndEva.cli;
 
-import main.java.ru.itmo.ArsikAndEva.manager.BookingManager;
-import main.java.ru.itmo.ArsikAndEva.manager.CheckoutManager;
-import main.java.ru.itmo.ArsikAndEva.manager.InstrumentManager;
+import ru.itmo.ArsikAndEva.manager.BookingManager;
+import ru.itmo.ArsikAndEva.manager.CheckoutManager;
+import ru.itmo.ArsikAndEva.manager.InstrumentManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +26,7 @@ public class ConsoleApp {
 
         commands = new HashMap<>();
         commands.put("checkout_take", new CheckoutTakeCommand(instrumentManager, checkoutManager, scanner));
-        commands.put("book_create", new BookCreatCommand(bookingManager, scanner));
+        commands.put("book_create", new BookCreatCommand(instrumentManager, bookingManager, scanner));
         commands.put("book_list", new BookListCommand(bookingManager, scanner));
         commands.put("book_reschedule", new BookRescheduleCommand(bookingManager, scanner));
         commands.put("book_cancel", new BookCancelCommand(bookingManager));

@@ -1,7 +1,7 @@
-package main.java.ru.itmo.ArsikAndEva.model;
+package ru.itmo.ArsikAndEva.model;
 
-import main.java.ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
-import main.java.ru.itmo.ArsikAndEva.model.enums.InstrumentType;
+import ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
+import ru.itmo.ArsikAndEva.model.enums.InstrumentType;
 import java.time.Instant;
 import java.util.Objects;
 

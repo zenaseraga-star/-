@@ -1,10 +1,10 @@
-package main.java.ru.itmo.ArsikAndEva.cli;
+package ru.itmo.ArsikAndEva.cli;
 
 
-import main.java.ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
-import main.java.ru.itmo.ArsikAndEva.exception.ValidationException;
-import main.java.ru.itmo.ArsikAndEva.manager.BookingManager;
-import main.java.ru.itmo.ArsikAndEva.validator.BookingValidator;
+import ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
+import ru.itmo.ArsikAndEva.exception.ValidationException;
+import ru.itmo.ArsikAndEva.manager.BookingManager;
+import ru.itmo.ArsikAndEva.validator.BookingValidator;
 
 import java.util.Scanner;
 

@@ -1,4 +1,4 @@
-package main.java.ru.itmo.ArsikAndEva.model.enums;
+package ru.itmo.ArsikAndEva.model.enums;
 public enum InstrumentType {
     PH_METER,
     BALANCE,

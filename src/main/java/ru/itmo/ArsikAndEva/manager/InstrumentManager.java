@@ -1,10 +1,10 @@
-package main.java.ru.itmo.ArsikAndEva.manager;
+package ru.itmo.ArsikAndEva.manager;
 
-import main.java.ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
-import main.java.ru.itmo.ArsikAndEva.model.Instrument;
-import main.java.ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
-import main.java.ru.itmo.ArsikAndEva.model.enums.InstrumentType;
-import main.java.ru.itmo.ArsikAndEva.validator.InstrumentValidator;
+import ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
+import ru.itmo.ArsikAndEva.model.Instrument;
+import ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
+import ru.itmo.ArsikAndEva.model.enums.InstrumentType;
+import ru.itmo.ArsikAndEva.validator.InstrumentValidator;
 
 import java.time.Instant;
 import java.util.*;

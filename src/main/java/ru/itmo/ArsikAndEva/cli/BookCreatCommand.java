@@ -1,17 +1,20 @@
-package main.java.ru.itmo.ArsikAndEva.cli;
+package ru.itmo.ArsikAndEva.cli;
 
-import main.java.ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
-import main.java.ru.itmo.ArsikAndEva.exception.ValidationException;
-import main.java.ru.itmo.ArsikAndEva.manager.BookingManager;
-import main.java.ru.itmo.ArsikAndEva.validator.BookingValidator;
+import ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
+import ru.itmo.ArsikAndEva.exception.ValidationException;
+import ru.itmo.ArsikAndEva.manager.BookingManager;
+import ru.itmo.ArsikAndEva.manager.InstrumentManager;
+import ru.itmo.ArsikAndEva.validator.BookingValidator;
 
 import java.util.Scanner;
 
 public class BookCreatCommand implements Command {
+    private InstrumentManager instrumentManager;
     private BookingManager bookingManager;
     private Scanner scanner;
 
-    public BookCreatCommand(BookingManager bookingManager, Scanner scanner)  {
+    public BookCreatCommand(InstrumentManager instrumentManager, BookingManager bookingManager, Scanner scanner)  {
+        this.instrumentManager = instrumentManager;
         this.bookingManager = bookingManager;
         this.scanner = scanner;
     }
@@ -23,8 +26,11 @@ public class BookCreatCommand implements Command {
                 throw new ValidationException(" Введите id инструмента");
             }
             long instrumentId = Long.parseLong(args[1]);
+
+            instrumentManager.getById(instrumentId).orElseThrow(() -> new EntityNotFoundException("Инструмента с таким ID нету!"));
+
             String startAt = null;
-            System.out.println("Начало (YYYY-MM-DD HH:MM): ");
+            System.out.print("Начало (YYYY-MM-DD HH:MM): ");
 
             while(startAt == null){
 

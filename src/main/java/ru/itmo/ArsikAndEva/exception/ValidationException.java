@@ -1,4 +1,4 @@
-package main.java.ru.itmo.ArsikAndEva.exception;
+package ru.itmo.ArsikAndEva.exception;
 
 
 public class ValidationException extends RuntimeException {
