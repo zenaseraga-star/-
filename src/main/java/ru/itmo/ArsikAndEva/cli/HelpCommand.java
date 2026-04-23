@@ -18,5 +18,6 @@ public class HelpCommand implements Command {
         System.out.println("  help                            - список команд");
         System.out.println("  exit                            - выход");
         System.out.println("  save                            - сохранить данные");
+        System.out.println("  load                            - загрузить данные");
     }
 }

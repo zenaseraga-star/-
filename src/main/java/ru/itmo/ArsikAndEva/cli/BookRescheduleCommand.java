@@ -28,7 +28,7 @@ public class BookRescheduleCommand implements Command {
             while(startAt == null){
 
                 try{
-                    String zn = scanner.nextLine().trim();
+                    String zn = scanner.nextLine().trim().toUpperCase();
                     BookingValidator.validateTime(zn);
                     startAt = zn;
 

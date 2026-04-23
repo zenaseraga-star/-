@@ -31,7 +31,7 @@ public class SaveCommand implements Command{
     public void execute(String[] args) {
         String filepath = null;
 
-        if(args.length > 1 && args[1] != null && !args[1].trim().isEmpty()){
+        if(args.length > 1 && args[1] != null && !args[1].toUpperCase().trim().isEmpty()) {
                 filepath = args[1];
         }
         else {

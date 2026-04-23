@@ -49,7 +49,7 @@ public class BookCreatCommand implements Command {
             System.out.println("Конец  (YYYY-MM-DD HH:MM): ");
             while (endAt == null){
                 try {
-                    String zn = scanner.nextLine().trim();
+                    String zn = scanner.nextLine().trim().toUpperCase();
                     BookingValidator.validateTime(zn);
                     endAt = zn;
                 }
