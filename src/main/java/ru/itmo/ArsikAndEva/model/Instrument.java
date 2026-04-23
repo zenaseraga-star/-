@@ -2,10 +2,12 @@ package ru.itmo.ArsikAndEva.model;
 
 import ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
 import ru.itmo.ArsikAndEva.model.enums.InstrumentType;
+
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
 
-public class Instrument {
+public class Instrument implements Serializable {
 
     private long id;
     private String name;

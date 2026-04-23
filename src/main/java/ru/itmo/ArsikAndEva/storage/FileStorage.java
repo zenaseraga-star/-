@@ -1,9 +1,11 @@
 package ru.itmo.ArsikAndEva.storage;
-
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class FileStorage  {
+
     private String filepath;
     public FileStorage( String filepath){
         this.filepath = filepath;
@@ -12,13 +14,10 @@ public class FileStorage  {
         ObjectOutputStream oos = null;
         try {
             FileOutputStream out = new FileOutputStream(filepath);
-
             oos = new ObjectOutputStream(out);
             oos.writeObject(allData);
         }  finally {
             if (oos != null) {
-
-
                 oos.close();
             }
         }

@@ -17,5 +17,6 @@ public class HelpCommand implements Command {
         System.out.println("  inst_available                  - доступные приборы");
         System.out.println("  help                            - список команд");
         System.out.println("  exit                            - выход");
+        System.out.println("  save                            - сохранить данные");
     }
 }

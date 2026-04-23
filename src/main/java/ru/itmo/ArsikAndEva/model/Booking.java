@@ -2,12 +2,13 @@ package ru.itmo.ArsikAndEva.model;
 
 import ru.itmo.ArsikAndEva.model.enums.BookingStatus;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-public final class Booking {
+public final class Booking implements Serializable {
     // Уникальный номер бронирования. Программа назначает сама.
     private long id;
 

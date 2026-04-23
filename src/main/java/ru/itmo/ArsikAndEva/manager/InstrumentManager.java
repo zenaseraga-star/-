@@ -1,6 +1,7 @@
 package ru.itmo.ArsikAndEva.manager;
 
 import ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
+import ru.itmo.ArsikAndEva.model.Checkout;
 import ru.itmo.ArsikAndEva.model.Instrument;
 import ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
 import ru.itmo.ArsikAndEva.model.enums.InstrumentType;
@@ -11,7 +12,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class InstrumentManager {
-    private final Map<Long, Instrument> instruments = new HashMap<>();
+    private Map<Long, Instrument> instruments = new HashMap<>();
     private final AtomicLong giveId = new AtomicLong();
     private InstrumentValidator instrumentValidator = new InstrumentValidator();
 
@@ -61,4 +62,12 @@ public class InstrumentManager {
         instruments.remove(id);
     }
 
+
+    public  HashMap<Long, Instrument> getData(){
+        return new HashMap<>(instruments);
+    }
+    public void loadData(HashMap<Long, Instrument> newInst){
+        this.instruments.clear();
+        this.instruments.putAll(newInst);
+    }
 }

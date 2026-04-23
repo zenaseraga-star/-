@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 public class BookingManager {
-    private Map<Long, Booking> books = new HashMap<>();
+    private final Map<Long, Booking> books = new HashMap<>();
 
     private InstrumentManager instrumentManager;
 
@@ -128,4 +128,14 @@ public class BookingManager {
     public List<Booking> getAll() {
         return new ArrayList<>(books.values());
     }
-}
+
+
+    public  HashMap<Long, Booking> getData(){
+        return new HashMap<>(books);
+    }
+    public void loadData(HashMap<Long, Booking> newBookings){
+        this.books.clear();
+        this.books.putAll(newBookings);
+    }
+
+    }

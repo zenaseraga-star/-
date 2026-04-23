@@ -1,6 +1,7 @@
 package ru.itmo.ArsikAndEva.manager;
 import ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
 import ru.itmo.ArsikAndEva.exception.ValidationException;
+import ru.itmo.ArsikAndEva.model.Booking;
 import ru.itmo.ArsikAndEva.model.Checkout;
 import ru.itmo.ArsikAndEva.model.Instrument;
 import ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
@@ -83,5 +84,14 @@ public class CheckoutManager {
             instrument.setStatus(InstrumentStatus.OUT_OF_SERVICE);
             instrumentManager.update(instrument.getId(), instrument);
         }
+    }
+
+
+    public  HashMap<Long, Checkout> getData(){
+        return new HashMap<>(checkoutMap);
+    }
+    public void loadData(HashMap<Long, Checkout> newCheckouts){
+        this.checkoutMap.clear();
+        this.checkoutMap.putAll(newCheckouts);
     }
 }

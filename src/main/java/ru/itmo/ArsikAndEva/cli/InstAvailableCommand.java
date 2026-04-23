@@ -23,7 +23,7 @@ public class InstAvailableCommand implements Command {
     private final Scanner scanner;
     private final InstrumentManager instrumentManager;
     private final BookingManager bookingManager;
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.UTC);
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.systemDefault());
 
     public InstAvailableCommand(InstrumentManager instrumentManager,  BookingManager bookingManager) {
         this.instrumentManager = instrumentManager;

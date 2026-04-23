@@ -3,6 +3,7 @@ package ru.itmo.ArsikAndEva.cli;
 import ru.itmo.ArsikAndEva.manager.BookingManager;
 import ru.itmo.ArsikAndEva.manager.CheckoutManager;
 import ru.itmo.ArsikAndEva.manager.InstrumentManager;
+import ru.itmo.ArsikAndEva.storage.FileStorage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +16,7 @@ public class ConsoleApp {
     private final BookingManager bookingManager;
     private final InstrumentManager instrumentManager;
     private final CheckoutManager checkoutManager;
+    private FileStorage storage;
 
 
     public ConsoleApp() {
@@ -22,6 +24,7 @@ public class ConsoleApp {
         this.instrumentManager = new InstrumentManager();
         this.bookingManager = new BookingManager(instrumentManager);
         this.checkoutManager = new CheckoutManager(instrumentManager);
+        this.storage = new FileStorage("data.txt");
 
 
         commands = new HashMap<>();
@@ -37,6 +40,7 @@ public class ConsoleApp {
         commands.put("checkout_show", new CheckoutShowCommand(checkoutManager));
         commands.put("inst_add", new InstAddCommand(instrumentManager));
         commands.put("help", new HelpCommand());
+        commands.put("save", new SaveCommand(scanner, bookingManager, instrumentManager,checkoutManager, storage ));
     }
 
 

@@ -2,10 +2,11 @@ package ru.itmo.ArsikAndEva.model;
 
 import ru.itmo.ArsikAndEva.model.enums.ReturnCondition;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
 
-public final class Checkout {
+public final class Checkout implements Serializable {
     // Уникальный номер выдачи. Программа назначает сама.
     private long id;
     // Какой прибор выдали (id прибора).
