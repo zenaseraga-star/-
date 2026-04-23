@@ -41,7 +41,7 @@ public class ConsoleApp {
         commands.put("inst_add", new InstAddCommand(instrumentManager));
         commands.put("help", new HelpCommand());
         commands.put("save", new SaveCommand(scanner, bookingManager, instrumentManager,checkoutManager, storage ));
-        commands.put("load", new LoadCommand(scanner, bookingManager, checkoutManager, instrumentManager, storage));
+        commands.put("load", new LoadCommand(scanner, bookingManager, checkoutManager, instrumentManager));
     }
 
 
