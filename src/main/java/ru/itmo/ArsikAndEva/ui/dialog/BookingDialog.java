@@ -10,6 +10,7 @@ import ru.itmo.ArsikAndEva.model.Instrument;
 import ru.itmo.ArsikAndEva.ui.alert.AlertService;
 import ru.itmo.ArsikAndEva.validator.BookingValidator;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 public class BookingDialog {
@@ -92,6 +93,12 @@ public class BookingDialog {
         ComboBox<Instrument> instBox = new ComboBox<>();
         instBox.getItems().addAll(instrumentManager.getAll());
 
+        DatePicker startDatePicker = new DatePicker();
+        startDatePicker.setPromptText("Выберите дату начала");
+
+        DatePicker endDatePicker = new DatePicker();
+        endDatePicker.setPromptText("Выберите дату конца");
+
         TextField startAtField = new TextField();
         TextField endAtField = new TextField();
 
@@ -105,7 +112,7 @@ public class BookingDialog {
 
         bookingDialog.setResultConverter(button -> {
             if (button != addButton){
-                return null;
+               return null;
             }
 
 
@@ -114,9 +121,11 @@ public class BookingDialog {
             Optional<Instrument> instrument = Optional.ofNullable(instBox.getValue());
             if (instrument.isEmpty()) {
                 AlertService.showError("Ошибка.", "Введите Id прибора");
-                return null;
+
             }
             Long id = instrument.get().getId();
+            LocalDate startDate = startDatePicker.getValue();
+            LocalDate endDate = endDatePicker.getValue();
             try{
                 BookingValidator.validateTime(start);
                 BookingValidator.validateTime(end);
