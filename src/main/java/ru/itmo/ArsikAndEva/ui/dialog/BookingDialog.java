@@ -3,6 +3,7 @@ package ru.itmo.ArsikAndEva.ui.dialog;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import ru.itmo.ArsikAndEva.exception.ValidationException;
 import ru.itmo.ArsikAndEva.manager.BookingManager;
 import ru.itmo.ArsikAndEva.manager.InstrumentManager;
 import ru.itmo.ArsikAndEva.model.Booking;
@@ -10,12 +11,15 @@ import ru.itmo.ArsikAndEva.model.Instrument;
 import ru.itmo.ArsikAndEva.ui.alert.AlertService;
 import ru.itmo.ArsikAndEva.validator.BookingValidator;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 public class BookingDialog {
-    private static GridPane createForm(ComboBox<Instrument> insBox, TextField startAtField, TextField endAtField, DatePicker endDatePicker,
-                                       DatePicker startDatePicker){
+    private static GridPane createForm(ComboBox<Instrument> insBox,  DatePicker endDatePicker,
+                                       DatePicker startDatePicker, TextField startTimeField,  TextField endTimeField){
         GridPane gridPane = new GridPane();
 
         gridPane.setPadding(new Insets(10));
@@ -23,8 +27,8 @@ public class BookingDialog {
         gridPane.setHgap(10);
 
         gridPane.addRow(0, new Label("ID прибора"), insBox);
-        gridPane.addRow(1, new Label("Начало(YYYY-MM-DD HH:MM):"), startAtField);
-        gridPane.addRow(2, new Label("Конец(YYYY-MM-DD HH:MM):"), endAtField);
+        gridPane.addRow(1, new Label("Время начала"), startTimeField);
+        gridPane.addRow(2, new Label("Время конца"), endTimeField);
         gridPane.addRow(3, new Label("Дата начала:"), startDatePicker);
         gridPane.addRow(4, new Label("Дата конца:"), endDatePicker);
         return gridPane;
@@ -95,22 +99,26 @@ public class BookingDialog {
 
         ComboBox<Instrument> instBox = new ComboBox<>();
         instBox.getItems().addAll(instrumentManager.getAll());
-
+TextField startTimeField = new TextField();
+TextField endTimeField = new TextField();
         DatePicker startDatePicker = new DatePicker();
         startDatePicker.setPromptText("Выберите дату начала");
 
         DatePicker endDatePicker = new DatePicker();
         endDatePicker.setPromptText("Выберите дату конца");
 
-        TextField startAtField = new TextField();
-        TextField endAtField = new TextField();
+
 
         GridPane form = createForm(
                 instBox,
-                startAtField,
-                endAtField,
                 endDatePicker,
-                startDatePicker
+                startDatePicker,
+                endTimeField,
+                startTimeField
+
+
+
+
 
         );
 
@@ -122,8 +130,6 @@ public class BookingDialog {
             }
 
 
-            String start = startAtField.getText().trim();
-            String end = endAtField.getText().trim();
             Optional<Instrument> instrument = Optional.ofNullable(instBox.getValue());
             if (instrument.isEmpty()) {
                 AlertService.showError("Ошибка.", "Введите Id прибора");
@@ -132,17 +138,19 @@ public class BookingDialog {
             Long id = instrument.get().getId();
             LocalDate startDate = startDatePicker.getValue();
             LocalDate endDate = endDatePicker.getValue();
-            try{
-                BookingValidator.validateTime(start);
-                BookingValidator.validateTime(end);
+            String startTimeStr = startTimeField.getText().trim();
+            String endTimeStr = endTimeField.getText().trim();
+            String startDateTimeStr = startDate.toString() + " " + startTimeStr;
+            String endDateTimeStr = endDate.toString() + " " + endTimeStr;
+            Instant start = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.systemDefault()).parse(startDateTimeStr));
+            Instant end = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.systemDefault()).parse(endDateTimeStr));
+            if (start.isAfter(end)) {
+                throw new ValidationException(" Конец не может быть раньше начала ");
             }
-            catch (Exception e){
-                AlertService.showError("Ошибка","Неверный формат даты!");
-            }
 
 
 
-            long bookId = bookingManager.createBook(id,start,end, "System");
+            long bookId = bookingManager.createBook(id,startDateTimeStr ,endDateTimeStr, "System");
 
             return bookingManager.getBookById(bookId);
         });
