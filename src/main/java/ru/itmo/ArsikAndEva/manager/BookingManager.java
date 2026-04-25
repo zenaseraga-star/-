@@ -13,17 +13,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class BookingManager {
     private final Map<Long, Booking> books = new HashMap<>();
-
+    private final AtomicLong idCounter = new AtomicLong(1);
     private InstrumentManager instrumentManager;
 
     public BookingManager(InstrumentManager instrumentManager) {
         this.instrumentManager = instrumentManager;
     }
 
-    private BookingValidator BookingValidator = new BookingValidator();
+    private BookingValidator bookingValidator = new BookingValidator();
 
     public long createBook(long instrumentId, String startAt, String endAt, String owner) {
         instrumentManager.getById(instrumentId).orElseThrow(() -> new EntityNotFoundException("Инструмент с таким id не найден"));
@@ -42,22 +43,22 @@ public class BookingManager {
             }
         }
 
-        long millis = Instant.now().getEpochSecond();
-        Booking book = new Booking(millis + books.size(), Instant.now());
+        long newId = idCounter.getAndIncrement();
+        Booking book = new Booking(newId, Instant.now());
+        bookingValidator.validate(book);
         book.setStartAt(start);
         book.setEndAt(end);
         book.setInstrumentId(instrumentId);
         book.setOwnerUsername(owner);
         book.setStatus(BookingStatus.ACTIVE);
-        books.put(book.getId(), book);
-        BookingValidator.validate(book);
+        books.put(newId, book);
         return book.getId();
 
     }
 
     public List<Booking> booklist(long instrumentId, String date) {
         if (date == null) {
-            throw new ValidationException(" Неверный формат даты");
+            throw new ValidationException("Неверный формат даты");
         } else {
             Instant dat = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.systemDefault()).parse(date));
 
@@ -76,7 +77,7 @@ public class BookingManager {
         if (Instant.now().isBefore(book.getStartAt())) {
             book.setStatus(BookingStatus.CANCELLED);
         } else {
-            throw new ValidationException(" Нельзя отменить начавшуюся бронь");
+            throw new ValidationException("Нельзя отменить начавшуюся бронь");
         }
     }
 
@@ -104,7 +105,7 @@ public class BookingManager {
 
     public Booking getBookById(long bookId) {
         if (!books.containsKey(bookId))
-            throw new EntityNotFoundException(" Брони с id " + bookId + " нет в списке");
+            throw new EntityNotFoundException("Брони с id " + bookId + " нет в списке");
         return books.get(bookId);
     }
 
@@ -112,11 +113,11 @@ public class BookingManager {
         Instant start = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.UTC).parse(startAt));
         Instant end = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.UTC).parse(endAt));
         Booking book = getBookById(Id);
-        BookingValidator.validate(book);
+        bookingValidator.validate(book);
         book.setStartAt(start);
         book.setEndAt(end);
         book.setOwnerUsername(owner);
-        BookingValidator.validate(book);
+        bookingValidator.validate(book);
         return book;
     }
 
@@ -133,9 +134,17 @@ public class BookingManager {
     public  HashMap<Long, Booking> getData(){
         return new HashMap<>(books);
     }
+
     public void loadData(HashMap<Long, Booking> newBookings){
         this.books.clear();
         this.books.putAll(newBookings);
+
+        long maxId = newBookings.keySet()
+                .stream()
+                .mapToLong(Long::longValue)
+                .max()
+                .orElse(0);
+        idCounter.set(maxId + 1);
     }
 
-    }
+}

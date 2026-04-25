@@ -13,6 +13,7 @@ import ru.itmo.ArsikAndEva.model.Instrument;
 import ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
 import ru.itmo.ArsikAndEva.model.enums.InstrumentType;
 import ru.itmo.ArsikAndEva.ui.alert.AlertService;
+import ru.itmo.ArsikAndEva.ui.dialog.InstrumentDialog;
 
 import java.util.Optional;
 
@@ -67,18 +68,30 @@ public class InstrumentTab extends VBox {
         return new HBox(10, refreshButton, addButton, deleteButton);
     }
 
-    private void refreshData(){
+    public void refreshData(){
         data.setAll(instrumentManager.getAll());
     }
 
     private void addInstrument(){
+        Optional<Instrument> instrument = InstrumentDialog.showAddDialog();
 
+        instrument.ifPresent(inst -> {
+            instrumentManager.add(inst);
+            refreshData();
+        });
     }
 
     private void deleteSelectedInstrument(){
         Optional<Instrument> selected = Optional.ofNullable(table.getSelectionModel().getSelectedItem());
         selected.ifPresentOrElse(
                 e -> {
+
+                    boolean del = AlertService.showConfirmation("Подтверждение удаления",
+                            "Вы точно хотите удалить прибор " + e.getName() + " ?");
+
+                    if (!del)
+                        return;
+
                     instrumentManager.remove(e.getId());
                     refreshData();
                     table.getSelectionModel().clearSelection();

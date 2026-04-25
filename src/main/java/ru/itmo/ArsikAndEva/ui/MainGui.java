@@ -1,20 +1,31 @@
 package ru.itmo.ArsikAndEva.ui;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import ru.itmo.ArsikAndEva.manager.BookingManager;
 import ru.itmo.ArsikAndEva.manager.CheckoutManager;
 import ru.itmo.ArsikAndEva.manager.InstrumentManager;
 import ru.itmo.ArsikAndEva.storage.AllData;
 import ru.itmo.ArsikAndEva.storage.FileStorage;
+import ru.itmo.ArsikAndEva.ui.tab.BookingTab;
+import ru.itmo.ArsikAndEva.ui.tab.CheckoutTab;
 import ru.itmo.ArsikAndEva.ui.tab.InstrumentTab;
 
+import static ru.itmo.ArsikAndEva.ui.alert.AlertService.*;
+
 public class MainGui extends Application {
+    private InstrumentTab instrumentTabContent;
+    private BookingTab bookingTabContent;
+    private CheckoutTab checkoutTabContent;
+
+
     private final InstrumentManager instrumentManager = new InstrumentManager();
     private final BookingManager bookingManager = new BookingManager(instrumentManager);
     private final CheckoutManager checkoutManager = new CheckoutManager(instrumentManager);
@@ -25,6 +36,8 @@ public class MainGui extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Система управления лабораторией");
 
+        loadDataOnStart();
+
         TabPane tabPane = new TabPane();
 
         Tab instrumentTab = createInstrumentTab();
@@ -34,6 +47,7 @@ public class MainGui extends Application {
         tabPane.getTabs().addAll(instrumentTab, bookingTab, checkoutTab);
 
         BorderPane root = new BorderPane();
+        root.setBottom(createControlPanel());
         root.setCenter(tabPane);
 
         Scene scene = new Scene(root, 800, 600);
@@ -45,21 +59,22 @@ public class MainGui extends Application {
     private Tab createInstrumentTab() {
         InstrumentTab instrumentTabContent = new InstrumentTab(instrumentManager);
 
-        Tab instrumentTab = new Tab("Приборы");
-        instrumentTab.setContent(instrumentTabContent);
-        instrumentTab.setClosable(false);
-
-        return instrumentTab;
+        this.instrumentTabContent = new InstrumentTab(instrumentManager); // инициализируем поле
+        Tab tab = new Tab("Приборы", instrumentTabContent);
+        tab.setClosable(false);
+        return tab;
     }
 
     private Tab createBookingTab() {
-        Tab bookingTab = new Tab("Бронирования");
+        this.bookingTabContent = new BookingTab(bookingManager);
+        Tab bookingTab = new Tab("Бронирования", bookingTabContent);
         bookingTab.setClosable(false);
 
         return bookingTab;
     }
 
     private Tab createCheckoutTab() {
+        this.checkoutTabContent = new CheckoutTab(checkoutManager);
         Tab checkoutTab = new Tab("Выдачи");
         checkoutTab.setClosable(false);
 
@@ -76,9 +91,9 @@ public class MainGui extends Application {
 
             fileStorage.save(allData);
 
-            showAlert("Успех", "Данные успешно сохранены!", Alert.AlertType.INFORMATION);
+            showInfo("Успех", "Данные успешно сохранены!");
         } catch (Exception e) {
-            showAlert("Ошибка", "Не удалось сохранить: " + e.getMessage(), Alert.AlertType.ERROR);
+            showError("Ошибка", "Не удалось сохранить: " + e.getMessage());
         }
     }
 
@@ -88,20 +103,49 @@ public class MainGui extends Application {
 
             instrumentManager.loadData(new java.util.HashMap<>(loaded.instruments()));
 
-            showAlert("Успех", "Данные загружены! Нажмите Refresh на вкладках.", Alert.AlertType.INFORMATION);
+            showInfo("Успех", "Данные загружены! Нажмите \"Обновить\" на вкладках");
         } catch (Exception e) {
-            showAlert("Ошибка", "Не удалось загрузить: " + e.getMessage(), Alert.AlertType.ERROR);
+            showError("Ошибка", "Не удалось загрузить: " + e.getMessage());
         }
     }
 
-    private void showAlert(String title, String content, Alert.AlertType type) {
-        Alert alert = new Alert(type);
+    private HBox createControlPanel(){
+        Button saveButton = new Button("Сохранить");
+        Button loadButton = new Button("Загрузить");
 
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
+        saveButton.setOnAction(e -> handleSave());
+        loadButton.setOnAction(e -> handleLoad());
+
+        HBox panel = new HBox(10, saveButton, loadButton);
+        panel.setPadding(new Insets(10));
+
+        return panel;
     }
+
+    private void loadDataOnStart() {
+        try {
+            AllData loaded = fileStorage.load();
+
+            instrumentManager.loadData(new java.util.HashMap<>(loaded.instruments()));
+
+            System.out.println("Данные загружены из файла при старте.");
+        } catch (Exception e) {
+            System.out.println("Файл данных не загружен при старте: " + e.getMessage());
+        }
+    }
+
+    private void refreshAll() {
+        if (instrumentTabContent != null) {
+            instrumentTabContent.refreshData();
+        }
+        if (bookingTabContent != null) {
+            bookingTabContent.refreshData();
+        }
+        if (checkoutTabContent != null) {
+            checkoutTabContent.refreshData();
+        }
+    }
+
 
     public static void main(String[] args) {
         launch(args);
