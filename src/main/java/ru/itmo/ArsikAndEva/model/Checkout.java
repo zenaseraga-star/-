@@ -27,6 +27,16 @@ public final class Checkout implements Serializable {
     // Когда запись создана. Программа ставит автоматически.
     private Instant createdAt;
 
+    public Checkout(long instrumentId, String username, String comment) {
+        this.instrumentId = instrumentId;
+        this.username = username;
+        this.comment = comment;
+        this.takenAt = Instant.now();
+        this.createdAt = Instant.now();
+        this.ownerUsername = "SYSTEM";
+
+    }
+
     public Checkout(long id, long instrumentId,  String username, String comment, Instant takenAt, Instant returnedAt, ReturnCondition returnCondition, String ownerUsername, Instant createdAt ){
         this.id = id;
         this.instrumentId = instrumentId;

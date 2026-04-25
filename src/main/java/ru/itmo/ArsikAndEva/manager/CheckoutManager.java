@@ -93,5 +93,13 @@ public class CheckoutManager {
     public void loadData(HashMap<Long, Checkout> newCheckouts){
         this.checkoutMap.clear();
         this.checkoutMap.putAll(newCheckouts);
+
+        long maxId = newCheckouts.keySet()
+                .stream()
+                .mapToLong(Long::longValue)
+                .max()
+                .orElse(0);
+
+        getId.set(maxId);
     }
 }
