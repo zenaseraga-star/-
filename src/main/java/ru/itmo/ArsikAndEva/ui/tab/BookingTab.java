@@ -10,6 +10,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import ru.itmo.ArsikAndEva.manager.BookingManager;
 import ru.itmo.ArsikAndEva.manager.InstrumentManager;
@@ -37,6 +38,7 @@ public class BookingTab extends VBox {
     }
 
     private void setupTable() {
+        VBox.setVgrow(table, Priority.ALWAYS);
         TableColumn<Booking, Long> bookIdCol = new TableColumn<>("ID брони");
         bookIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
 
@@ -62,6 +64,7 @@ public class BookingTab extends VBox {
         crCol.setPrefWidth(100);
 
         table.getColumns().addAll(bookIdCol, instId, startCol, endCol, statusCol, ownCol, crCol);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         table.setItems(data);
     }
 

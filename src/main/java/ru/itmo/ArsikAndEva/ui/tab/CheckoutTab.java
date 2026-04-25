@@ -6,6 +6,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import ru.itmo.ArsikAndEva.manager.CheckoutManager;
 import ru.itmo.ArsikAndEva.manager.InstrumentManager;
@@ -39,6 +40,7 @@ public class CheckoutTab extends VBox {
     }
 
     private void setupTable() {
+        VBox.setVgrow(table, Priority.ALWAYS);
         TableColumn<Checkout, Long> idCol = new TableColumn<>("ID Выдачи");
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
 
@@ -62,6 +64,7 @@ public class CheckoutTab extends VBox {
         });
 
         table.getColumns().addAll(idCol, usernameCol, instIdCol, instName, takenCol, returnedCol);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         table.setItems(data);
     }
 

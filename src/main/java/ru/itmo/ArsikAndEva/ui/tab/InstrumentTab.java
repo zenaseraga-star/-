@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import ru.itmo.ArsikAndEva.manager.InstrumentManager;
 import ru.itmo.ArsikAndEva.model.Instrument;
@@ -38,6 +39,7 @@ public class InstrumentTab extends VBox {
     }
 
     private void setupTable(){
+        VBox.setVgrow(table, Priority.ALWAYS);
         TableColumn<Instrument, Long> idCol = new TableColumn<>("ID");
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
 
@@ -51,6 +53,7 @@ public class InstrumentTab extends VBox {
         statusCol.setCellValueFactory(new PropertyValueFactory("status"));
 
         table.getColumns().addAll(idCol, nameCol, typeCol, statusCol);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         table.setItems(data);
     }
 

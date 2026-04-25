@@ -27,10 +27,11 @@ public class BookingDialog {
         gridPane.setHgap(10);
 
         gridPane.addRow(0, new Label("ID прибора"), insBox);
-        gridPane.addRow(1, new Label("Время начала"), startTimeField);
-        gridPane.addRow(2, new Label("Время конца"), endTimeField);
-        gridPane.addRow(3, new Label("Дата начала:"), startDatePicker);
-        gridPane.addRow(4, new Label("Дата конца:"), endDatePicker);
+        gridPane.addRow(1, new Label("Дата начала:"), startDatePicker);
+        gridPane.addRow(2, new Label("Время начала"), startTimeField);
+        gridPane.addRow(3, new Label("Дата конца:"), endDatePicker);
+        gridPane.addRow(4, new Label("Время конца"), endTimeField);
+
         return gridPane;
     }
     private static GridPane reForm(TextField startField,TextField endField){
@@ -99,27 +100,20 @@ public class BookingDialog {
 
         ComboBox<Instrument> instBox = new ComboBox<>();
         instBox.getItems().addAll(instrumentManager.getAll());
-TextField startTimeField = new TextField();
-TextField endTimeField = new TextField();
+        TextField startTimeField = new TextField();
+        TextField endTimeField = new TextField();
         DatePicker startDatePicker = new DatePicker();
         startDatePicker.setPromptText("Выберите дату начала");
 
         DatePicker endDatePicker = new DatePicker();
         endDatePicker.setPromptText("Выберите дату конца");
 
-
-
         GridPane form = createForm(
                 instBox,
                 endDatePicker,
                 startDatePicker,
-                endTimeField,
-                startTimeField
-
-
-
-
-
+                startTimeField,
+                endTimeField
         );
 
         bookingDialog.getDialogPane().setContent(form);
@@ -135,23 +129,31 @@ TextField endTimeField = new TextField();
                 AlertService.showError("Ошибка.", "Введите Id прибора");
 
             }
-            Long id = instrument.get().getId();
-            LocalDate startDate = startDatePicker.getValue();
-            LocalDate endDate = endDatePicker.getValue();
-            String startTimeStr = startTimeField.getText().trim();
-            String endTimeStr = endTimeField.getText().trim();
-            String startDateTimeStr = startDate.toString() + " " + startTimeStr;
-            String endDateTimeStr = endDate.toString() + " " + endTimeStr;
-            Instant start = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.systemDefault()).parse(startDateTimeStr));
-            Instant end = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.systemDefault()).parse(endDateTimeStr));
-            if (start.isAfter(end)) {
-                throw new ValidationException(" Конец не может быть раньше начала ");
+            long bookId;
+            long id;
+            String startDateTimeStr;
+            String endDateTimeStr;
+           try {
+               id = instrument.get().getId();
+               LocalDate startDate = startDatePicker.getValue();
+               LocalDate endDate = endDatePicker.getValue();
+               String startTimeStr = startTimeField.getText().trim();
+               String endTimeStr = endTimeField.getText().trim();
+               startDateTimeStr = startDate.toString() + " " + startTimeStr;
+                endDateTimeStr = endDate.toString() + " " + endTimeStr;
+               BookingValidator.validateTime(startDateTimeStr);
+               BookingValidator.validateTime(endDateTimeStr);
+           } catch (Exception e){
+               AlertService.showError("Ошибка", "Неверный формат даты");
+               return  null;
+           }
+
+try{
+               bookId = bookingManager.createBook(id,startDateTimeStr ,endDateTimeStr, "System");
+            } catch (Exception e) {
+                AlertService.showError("Ошибка", "Конец не может быть раньше начала");
+                return null;
             }
-
-
-
-            long bookId = bookingManager.createBook(id,startDateTimeStr ,endDateTimeStr, "System");
-
             return bookingManager.getBookById(bookId);
         });
 
