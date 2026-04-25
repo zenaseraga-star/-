@@ -63,9 +63,10 @@ public class InstrumentManager {
     }
 
 
-    public  HashMap<Long, Instrument> getData(){
+    public HashMap<Long, Instrument> getData(){
         return new HashMap<>(instruments);
     }
+
     public void loadData(HashMap<Long, Instrument> newInst){
         this.instruments.clear();
         this.instruments.putAll(newInst);
