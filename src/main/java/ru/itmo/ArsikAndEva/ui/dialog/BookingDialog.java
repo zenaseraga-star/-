@@ -14,7 +14,8 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 public class BookingDialog {
-    private static GridPane createForm(ComboBox<Instrument> insBox, TextField startAtField, TextField endAtField){
+    private static GridPane createForm(ComboBox<Instrument> insBox, TextField startAtField, TextField endAtField, DatePicker endDatePicker,
+                                       DatePicker startDatePicker){
         GridPane gridPane = new GridPane();
 
         gridPane.setPadding(new Insets(10));
@@ -24,6 +25,8 @@ public class BookingDialog {
         gridPane.addRow(0, new Label("ID прибора"), insBox);
         gridPane.addRow(1, new Label("Начало(YYYY-MM-DD HH:MM):"), startAtField);
         gridPane.addRow(2, new Label("Конец(YYYY-MM-DD HH:MM):"), endAtField);
+        gridPane.addRow(3, new Label("Дата начала:"), startDatePicker);
+        gridPane.addRow(4, new Label("Дата конца:"), endDatePicker);
         return gridPane;
     }
     private static GridPane reForm(TextField startField,TextField endField){
@@ -105,7 +108,10 @@ public class BookingDialog {
         GridPane form = createForm(
                 instBox,
                 startAtField,
-                endAtField
+                endAtField,
+                endDatePicker,
+                startDatePicker
+
         );
 
         bookingDialog.getDialogPane().setContent(form);
