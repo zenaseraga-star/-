@@ -3,27 +3,24 @@ package ru.itmo.ArsikAndEva.ui.dialog;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import ru.itmo.ArsikAndEva.exception.ValidationException;
 import ru.itmo.ArsikAndEva.manager.BookingManager;
 import ru.itmo.ArsikAndEva.manager.InstrumentManager;
 import ru.itmo.ArsikAndEva.model.Booking;
 import ru.itmo.ArsikAndEva.model.Instrument;
-import ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
-import ru.itmo.ArsikAndEva.model.enums.InstrumentType;
 import ru.itmo.ArsikAndEva.ui.alert.AlertService;
 import ru.itmo.ArsikAndEva.validator.BookingValidator;
 
 import java.util.Optional;
 
 public class BookingDialog {
-    private static GridPane createForm(TextField instIdField, TextField startAtField, TextField endAtField){
+    private static GridPane createForm(ComboBox<Instrument> insBox, TextField startAtField, TextField endAtField){
         GridPane gridPane = new GridPane();
 
         gridPane.setPadding(new Insets(10));
         gridPane.setVgap(10);
         gridPane.setHgap(10);
 
-        gridPane.addRow(0, new Label("ID прибора"), instIdField);
+        gridPane.addRow(0, new Label("ID прибора"), insBox);
         gridPane.addRow(1, new Label("Начало(YYYY-MM-DD HH:MM):"), startAtField);
         gridPane.addRow(2, new Label("Конец(YYYY-MM-DD HH:MM):"), endAtField);
         return gridPane;
@@ -46,9 +43,11 @@ public class BookingDialog {
         Dialog<Booking> bookingDialog = new Dialog<>();
         bookingDialog.setTitle("Окно переноса брони");
         bookingDialog.setHeaderText("Перенос брони " + booking.getId());
+
         ButtonType addButton = new ButtonType("Перенос", ButtonBar.ButtonData.OK_DONE);
         bookingDialog.getDialogPane().getButtonTypes().addAll(addButton, ButtonType.CANCEL);
-TextField startField = new TextField();
+
+        TextField startField = new TextField();
         startField.setPromptText("yyyy-mm-dd hh:mm");
         startField.setText(booking.getFormattedStart());
 
@@ -60,6 +59,7 @@ TextField startField = new TextField();
                 startField,
                 endField
         );
+
         bookingDialog.getDialogPane().setContent(form);
         bookingDialog.setResultConverter(button -> {
             if (button != addButton) {
@@ -89,14 +89,16 @@ TextField startField = new TextField();
         ButtonType addButton = new ButtonType("Создать", ButtonBar.ButtonData.OK_DONE);
         bookingDialog.getDialogPane().getButtonTypes().addAll(addButton, ButtonType.CANCEL);
 
-        TextField instIdField = new TextField();
+        ComboBox<Instrument> instBox = new ComboBox<>();
+        instBox.getItems().addAll(instrumentManager.getAll());
+
         TextField startAtField = new TextField();
         TextField endAtField = new TextField();
+
         GridPane form = createForm(
-                instIdField,
+                instBox,
                 startAtField,
                 endAtField
-
         );
 
         bookingDialog.getDialogPane().setContent(form);
@@ -106,15 +108,15 @@ TextField startField = new TextField();
                 return null;
             }
 
-            String inId = instIdField.getText().trim();
+
             String start = startAtField.getText().trim();
             String end = endAtField.getText().trim();
-
-            if (inId.isEmpty()) {
+            Optional<Instrument> instrument = Optional.ofNullable(instBox.getValue());
+            if (instrument.isEmpty()) {
                 AlertService.showError("Ошибка.", "Введите Id прибора");
                 return null;
             }
-
+            Long id = instrument.get().getId();
             try{
                 BookingValidator.validateTime(start);
                 BookingValidator.validateTime(end);
@@ -122,21 +124,10 @@ TextField startField = new TextField();
             catch (Exception e){
                 AlertService.showError("Ошибка","Неверный формат даты!");
             }
-            long id;
-try {
-    id = Long.parseLong(inId);
-}
-catch (NumberFormatException e){
-    AlertService.showError("Ошибка", "ID должно быть числом!");
-    return null;
-}
-            Optional<Instrument> instrument = instrumentManager.getById(id);
-            if (instrument.isEmpty()) {
-                AlertService.showError("Ошибка", "Инструмента с ID " + id + " не существует");
-                return null;
-            }
 
-long bookId = bookingManager.createBook(id,start,end, "System");
+
+
+            long bookId = bookingManager.createBook(id,start,end, "System");
 
             return bookingManager.getBookById(bookId);
         });
