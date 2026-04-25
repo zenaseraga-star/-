@@ -116,7 +116,7 @@ public class Instrument implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("ID: %d | Name: %-15s | Type: %-10s | Status: %-10s | Loc: %s",
+        return String.format("ID: %d \t Name: %-15s",
                 id, name, type, status, location);
     }
 }

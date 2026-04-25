@@ -14,7 +14,6 @@ import ru.itmo.ArsikAndEva.model.Checkout;
 import ru.itmo.ArsikAndEva.model.Instrument;
 import ru.itmo.ArsikAndEva.ui.alert.AlertService;
 
-import java.time.Instant;
 import java.util.Optional;
 
 public class CheckoutDialog {
