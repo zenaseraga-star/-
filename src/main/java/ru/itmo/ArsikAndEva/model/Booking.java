@@ -1,6 +1,7 @@
 package ru.itmo.ArsikAndEva.model;
 
 import ru.itmo.ArsikAndEva.model.enums.BookingStatus;
+import ru.itmo.ArsikAndEva.validator.BookingValidator;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -100,8 +101,24 @@ public final class Booking implements Serializable {
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
-
-
+public String getFormattedStart(){
+    DateTimeFormatter form = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault());
+    String formattedStart = form.format(startAt);
+    BookingValidator.validateTime(formattedStart);
+   return  formattedStart;
+}
+public String getFormattedEnd() {
+    DateTimeFormatter form = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault());
+    String formattedEnd = form.format(endAt);
+    BookingValidator.validateTime(formattedEnd);
+    return formattedEnd;
+}
+    public String getFormattedCr() {
+        DateTimeFormatter form = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault());
+        String formatedCr = form.format(createdAt);
+        BookingValidator.validateTime(formatedCr);
+        return formatedCr;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -117,10 +134,8 @@ public final class Booking implements Serializable {
 
     @Override
     public String toString() {
-        DateTimeFormatter form = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault());
-        String formattedStart = form.format(startAt);
-        String formattedEnd = form.format(endAt);
+
         return String.format("Booking #%d | Inst: %d | Start: %s | End: %s | Status: %s",
-                id, instrumentId, formattedStart, formattedEnd, status);
+                id, instrumentId, getFormattedStart(), getFormattedEnd(), status);
     }
 }

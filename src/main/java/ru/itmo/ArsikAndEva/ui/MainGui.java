@@ -66,7 +66,7 @@ public class MainGui extends Application {
     }
 
     private Tab createBookingTab() {
-        this.bookingTabContent = new BookingTab(bookingManager);
+        this.bookingTabContent = new BookingTab(bookingManager, instrumentManager);
         Tab bookingTab = new Tab("Бронирования", bookingTabContent);
         bookingTab.setClosable(false);
 

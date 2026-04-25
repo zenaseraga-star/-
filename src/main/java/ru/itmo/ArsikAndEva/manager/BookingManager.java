@@ -45,12 +45,12 @@ public class BookingManager {
 
         long newId = idCounter.getAndIncrement();
         Booking book = new Booking(newId, Instant.now());
-        bookingValidator.validate(book);
         book.setStartAt(start);
         book.setEndAt(end);
         book.setInstrumentId(instrumentId);
         book.setOwnerUsername(owner);
         book.setStatus(BookingStatus.ACTIVE);
+        bookingValidator.validate(book);
         books.put(newId, book);
         return book.getId();
 
