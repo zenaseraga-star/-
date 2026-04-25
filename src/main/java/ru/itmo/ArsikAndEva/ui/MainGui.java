@@ -18,13 +18,14 @@ import ru.itmo.ArsikAndEva.ui.tab.BookingTab;
 import ru.itmo.ArsikAndEva.ui.tab.CheckoutTab;
 import ru.itmo.ArsikAndEva.ui.tab.InstrumentTab;
 
+import java.util.HashMap;
+
 import static ru.itmo.ArsikAndEva.ui.alert.AlertService.*;
 
 public class MainGui extends Application {
     private InstrumentTab instrumentTabContent;
     private BookingTab bookingTabContent;
     private CheckoutTab checkoutTabContent;
-
 
     private final InstrumentManager instrumentManager = new InstrumentManager();
     private final BookingManager bookingManager = new BookingManager(instrumentManager);
@@ -57,9 +58,7 @@ public class MainGui extends Application {
     }
 
     private Tab createInstrumentTab() {
-        InstrumentTab instrumentTabContent = new InstrumentTab(instrumentManager);
-
-        this.instrumentTabContent = new InstrumentTab(instrumentManager); // инициализируем поле
+        this.instrumentTabContent = new InstrumentTab(instrumentManager);
         Tab tab = new Tab("Приборы", instrumentTabContent);
         tab.setClosable(false);
         return tab;
@@ -69,15 +68,13 @@ public class MainGui extends Application {
         this.bookingTabContent = new BookingTab(bookingManager, instrumentManager);
         Tab bookingTab = new Tab("Бронирования", bookingTabContent);
         bookingTab.setClosable(false);
-
         return bookingTab;
     }
 
     private Tab createCheckoutTab() {
-        this.checkoutTabContent = new CheckoutTab(checkoutManager);
-        Tab checkoutTab = new Tab("Выдачи");
+        this.checkoutTabContent = new CheckoutTab(checkoutManager, instrumentManager);
+        Tab checkoutTab = new Tab("Выдачи", checkoutTabContent);
         checkoutTab.setClosable(false);
-
         return checkoutTab;
     }
 
@@ -88,7 +85,6 @@ public class MainGui extends Application {
                     instrumentManager.getData(),
                     checkoutManager.getData()
             );
-
             fileStorage.save(allData);
 
             showInfo("Успех", "Данные успешно сохранены!");
@@ -101,9 +97,13 @@ public class MainGui extends Application {
         try {
             AllData loaded = fileStorage.load();
 
-            instrumentManager.loadData(new java.util.HashMap<>(loaded.instruments()));
+            instrumentManager.loadData(new HashMap<>(loaded.instruments()));
+            bookingManager.loadData(new HashMap<>(loaded.bookings()));
+            checkoutManager.loadData(new HashMap<>(loaded.checkouts()));
 
-            showInfo("Успех", "Данные загружены! Нажмите \"Обновить\" на вкладках");
+            refreshAll();
+            showInfo("Успех", "Данные загружены и обновлены!");
+
         } catch (Exception e) {
             showError("Ошибка", "Не удалось загрузить: " + e.getMessage());
         }
@@ -118,16 +118,15 @@ public class MainGui extends Application {
 
         HBox panel = new HBox(10, saveButton, loadButton);
         panel.setPadding(new Insets(10));
-
         return panel;
     }
 
     private void loadDataOnStart() {
         try {
             AllData loaded = fileStorage.load();
-
-            instrumentManager.loadData(new java.util.HashMap<>(loaded.instruments()));
-
+            instrumentManager.loadData(new HashMap<>(loaded.instruments()));
+            bookingManager.loadData(new HashMap<>(loaded.bookings()));
+            checkoutManager.loadData(new HashMap<>(loaded.checkouts()));
             System.out.println("Данные загружены из файла при старте.");
         } catch (Exception e) {
             System.out.println("Файл данных не загружен при старте: " + e.getMessage());
@@ -135,17 +134,10 @@ public class MainGui extends Application {
     }
 
     private void refreshAll() {
-        if (instrumentTabContent != null) {
-            instrumentTabContent.refreshData();
-        }
-        if (bookingTabContent != null) {
-            bookingTabContent.refreshData();
-        }
-        if (checkoutTabContent != null) {
-            checkoutTabContent.refreshData();
-        }
+        if (instrumentTabContent != null) instrumentTabContent.refreshData();
+        if (bookingTabContent != null) bookingTabContent.refreshData();
+        if (checkoutTabContent != null) checkoutTabContent.refreshData();
     }
-
 
     public static void main(String[] args) {
         launch(args);
