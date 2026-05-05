@@ -8,6 +8,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.*;
 import javafx.stage.Stage;
 import ru.itmo.ArsikAndEva.manager.BookingManager;
 import ru.itmo.ArsikAndEva.manager.CheckoutManager;
@@ -18,6 +19,7 @@ import ru.itmo.ArsikAndEva.ui.tab.BookingTab;
 import ru.itmo.ArsikAndEva.ui.tab.CheckoutTab;
 import ru.itmo.ArsikAndEva.ui.tab.InstrumentTab;
 
+import java.io.File;
 import java.util.HashMap;
 
 import static ru.itmo.ArsikAndEva.ui.alert.AlertService.*;
@@ -31,7 +33,7 @@ public class MainGui extends Application {
     private final BookingManager bookingManager = new BookingManager(instrumentManager);
     private final CheckoutManager checkoutManager = new CheckoutManager(instrumentManager);
 
-    private final FileStorage fileStorage = new FileStorage("data.txt");
+    private final FileStorage fileStorage = new FileStorage("data.ser");
 
     @Override
     public void start(Stage primaryStage) {
@@ -48,7 +50,7 @@ public class MainGui extends Application {
         tabPane.getTabs().addAll(instrumentTab, bookingTab, checkoutTab);
 
         BorderPane root = new BorderPane();
-        root.setBottom(createControlPanel());
+        root.setBottom(createControlPanel(primaryStage));
         root.setCenter(tabPane);
 
         Scene scene = new Scene(root, 800, 600);
@@ -78,14 +80,35 @@ public class MainGui extends Application {
         return checkoutTab;
     }
 
-    private void handleSave() {
+    private void handleSave(Stage primaryStage) {
         try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setInitialFileName("C:\\Users\\1\\IdeaProjects\\-\\data.ser");
+            fileChooser.setTitle("Сохранение данных");
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Serialized Files", "*.ser"),
+                    new FileChooser.ExtensionFilter("Text Files", "*.txt"),
+                    new FileChooser.ExtensionFilter("Data Files", "*.dat"),
+                    new FileChooser.ExtensionFilter("Bin Files", "*.bin"),
+                    new FileChooser.ExtensionFilter("All Files", "*.*"));
+            File selectedFile = fileChooser.showSaveDialog(primaryStage);
+            if (selectedFile==null){
+                return;
+            }
+            String filepath = selectedFile.getAbsolutePath();
+            if (!filepath.endsWith(".txt") && !filepath.endsWith(".bin")&& !filepath.endsWith(".ser") && !filepath.endsWith(".dat")){
+                filepath += ".ser";
+                selectedFile = new File(filepath);
+            }
+            FileStorage fileStorage1 = new FileStorage(selectedFile.getAbsolutePath());
+
+
             AllData allData = new AllData(
                     bookingManager.getData(),
                     instrumentManager.getData(),
                     checkoutManager.getData()
             );
-            fileStorage.save(allData);
+            fileStorage1.save(allData);
 
             showInfo("Успех", "Данные успешно сохранены!");
         } catch (Exception e) {
@@ -93,9 +116,23 @@ public class MainGui extends Application {
         }
     }
 
-    private void handleLoad() {
+    private void handleLoad(Stage primaryStage) {
         try {
-            AllData loaded = fileStorage.load();
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Загрузка данных");
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Serialized Files", "*.ser"),
+                    new FileChooser.ExtensionFilter("Text Files", "*.txt"),
+                    new FileChooser.ExtensionFilter("Data Files", "*.dat"),
+                    new FileChooser.ExtensionFilter("Bin Files", "*.bin"),
+                    new FileChooser.ExtensionFilter("All Files", "*.*"));
+            File selectedFile = fileChooser.showOpenDialog(primaryStage);
+            if (selectedFile==null){
+                return;
+            }
+
+            FileStorage fileStorage1 = new FileStorage(selectedFile.getAbsolutePath());
+            AllData loaded = fileStorage1.load();
 
             instrumentManager.loadData(new HashMap<>(loaded.instruments()));
             bookingManager.loadData(new HashMap<>(loaded.bookings()));
@@ -109,12 +146,12 @@ public class MainGui extends Application {
         }
     }
 
-    private HBox createControlPanel(){
+    private HBox createControlPanel(Stage primaryStage){
         Button saveButton = new Button("Сохранить");
         Button loadButton = new Button("Загрузить");
 
-        saveButton.setOnAction(e -> handleSave());
-        loadButton.setOnAction(e -> handleLoad());
+        saveButton.setOnAction(e -> handleSave(primaryStage));
+        loadButton.setOnAction(e -> handleLoad(primaryStage));
 
         HBox panel = new HBox(10, saveButton, loadButton);
         panel.setPadding(new Insets(10));

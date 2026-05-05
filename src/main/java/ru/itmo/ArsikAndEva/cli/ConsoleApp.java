@@ -24,7 +24,7 @@ public class ConsoleApp {
         this.instrumentManager = new InstrumentManager();
         this.bookingManager = new BookingManager(instrumentManager);
         this.checkoutManager = new CheckoutManager(instrumentManager);
-        this.storage = new FileStorage("data.txt");
+        this.storage = new FileStorage("data.ser");
 
 
         commands = new HashMap<>();
