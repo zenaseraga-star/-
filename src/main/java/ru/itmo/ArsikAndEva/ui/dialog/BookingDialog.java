@@ -34,14 +34,18 @@ public class BookingDialog {
 
         return gridPane;
     }
-    private static GridPane reForm(TextField startField,TextField endField){
+    private static GridPane reForm(DatePicker endDatePicker, DatePicker startDatePicker, TextField startTimeField,  TextField endTimeField){
         GridPane gridPane = new GridPane();
 
         gridPane.setPadding(new Insets(10));
         gridPane.setVgap(10);
         gridPane.setHgap(10);
-        gridPane.addRow(1, new Label("Начало(YYYY-MM-DD HH:MM):"), startField);
-        gridPane.addRow(2, new Label("Конец(YYYY-MM-DD HH:MM):"), endField);
+        gridPane.addRow(1, new Label("Дата начала:"), startDatePicker);
+        gridPane.addRow(2, new Label("Время начала"), startTimeField);
+        gridPane.addRow(3, new Label("Дата конца:"), endDatePicker);
+        gridPane.addRow(4, new Label("Время конца"), endTimeField);
+//        gridPane.addRow(1, new Label("Начало(YYYY-MM-DD HH:MM):"), startField);
+//        gridPane.addRow(2, new Label("Конец(YYYY-MM-DD HH:MM):"), endField);
         return gridPane;
     }
     public static boolean showRechDialog( Booking booking,BookingManager bookingManager){
@@ -55,18 +59,29 @@ public class BookingDialog {
 
         ButtonType addButton = new ButtonType("Перенос", ButtonBar.ButtonData.OK_DONE);
         bookingDialog.getDialogPane().getButtonTypes().addAll(addButton, ButtonType.CANCEL);
+        TextField startTimeField = new TextField();
+        TextField endTimeField = new TextField();
+        DatePicker startDatePicker = new DatePicker();
+        startDatePicker.setPromptText("Выберите дату начала");
 
-        TextField startField = new TextField();
-        startField.setPromptText("yyyy-mm-dd hh:mm");
-        startField.setText(booking.getFormattedStart());
+        DatePicker endDatePicker = new DatePicker();
+        endDatePicker.setPromptText("Выберите дату конца");
 
-        TextField endField = new TextField();
-        endField.setPromptText("yyyy-mm-dd hh:mm");
-        endField.setText(booking.getFormattedEnd());
+//        TextField startField = new TextField();
+//        startField.setPromptText("yyyy-mm-dd hh:mm");
+//        startField.setText(booking.getFormattedStart());
+//
+//        TextField endField = new TextField();
+//        endField.setPromptText("yyyy-mm-dd hh:mm");
+//        endField.setText(booking.getFormattedEnd());
 
         GridPane form = reForm(
-                startField,
-                endField
+                endDatePicker,
+                startDatePicker,
+                startTimeField,
+                endTimeField
+
+
         );
 
         bookingDialog.getDialogPane().setContent(form);
@@ -75,12 +90,26 @@ public class BookingDialog {
                 return null;
             }
 
-            String start = startField.getText().trim();
-            String end = endField.getText().trim();
+            String startDateTimeStr;
+            String endDateTimeStr;
             try {
-                BookingValidator.validateTime(start);
-                BookingValidator.validateTime(end);
-                bookingManager.bookReschedule(booking.getId(), start, end);
+                LocalDate startDate = startDatePicker.getValue();
+                LocalDate endDate = endDatePicker.getValue();
+                String startTimeStr = startTimeField.getText().trim();
+                String endTimeStr = endTimeField.getText().trim();
+                startDateTimeStr = startDate.toString() + " " + startTimeStr;
+                endDateTimeStr = endDate.toString() + " " + endTimeStr;
+                BookingValidator.validateTime(startDateTimeStr);
+                BookingValidator.validateTime(endDateTimeStr);
+            } catch (Exception e){
+                AlertService.showError("Ошибка", "Неверный формат даты");
+                return  null;
+            }
+
+            try {
+                BookingValidator.validateTime(startDateTimeStr);
+                BookingValidator.validateTime(endDateTimeStr);
+                bookingManager.bookReschedule(booking.getId(), startDateTimeStr, endDateTimeStr);
                 return booking;
             } catch (Exception e) {
                 AlertService.showError("Ошибка", "Конец раньше начала");
@@ -97,6 +126,8 @@ public class BookingDialog {
 
         ButtonType addButton = new ButtonType("Создать", ButtonBar.ButtonData.OK_DONE);
         bookingDialog.getDialogPane().getButtonTypes().addAll(addButton, ButtonType.CANCEL);
+//        ComboBox<String> startTimeBox = new ComboBox<>();
+//        startTimeBox.getItems().addAll("00", "01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23");
 
         ComboBox<Instrument> instBox = new ComboBox<>();
         instBox.getItems().addAll(instrumentManager.getAll());
