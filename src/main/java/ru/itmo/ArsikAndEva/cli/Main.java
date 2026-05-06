@@ -1,3 +1,4 @@
+package ru.itmo.ArsikAndEva.cli;
 import ru.itmo.ArsikAndEva.cli.ConsoleApp;
 
 public class Main {
