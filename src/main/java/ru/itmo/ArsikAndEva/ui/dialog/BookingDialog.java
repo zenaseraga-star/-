@@ -1,9 +1,9 @@
 package ru.itmo.ArsikAndEva.ui.dialog;
 
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import ru.itmo.ArsikAndEva.exception.ValidationException;
 import ru.itmo.ArsikAndEva.manager.BookingManager;
 import ru.itmo.ArsikAndEva.manager.InstrumentManager;
 import ru.itmo.ArsikAndEva.model.Booking;
@@ -11,10 +11,7 @@ import ru.itmo.ArsikAndEva.model.Instrument;
 import ru.itmo.ArsikAndEva.ui.alert.AlertService;
 import ru.itmo.ArsikAndEva.validator.BookingValidator;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 public class BookingDialog {
@@ -59,65 +56,55 @@ public class BookingDialog {
 
         ButtonType addButton = new ButtonType("Перенос", ButtonBar.ButtonData.OK_DONE);
         bookingDialog.getDialogPane().getButtonTypes().addAll(addButton, ButtonType.CANCEL);
+
         TextField startTimeField = new TextField();
         TextField endTimeField = new TextField();
+
         DatePicker startDatePicker = new DatePicker();
         startDatePicker.setPromptText("Выберите дату начала");
 
         DatePicker endDatePicker = new DatePicker();
         endDatePicker.setPromptText("Выберите дату конца");
 
-//        TextField startField = new TextField();
-//        startField.setPromptText("yyyy-mm-dd hh:mm");
-//        startField.setText(booking.getFormattedStart());
-//
-//        TextField endField = new TextField();
-//        endField.setPromptText("yyyy-mm-dd hh:mm");
-//        endField.setText(booking.getFormattedEnd());
-
         GridPane form = reForm(
                 endDatePicker,
                 startDatePicker,
                 startTimeField,
                 endTimeField
-
-
         );
 
         bookingDialog.getDialogPane().setContent(form);
-        bookingDialog.setResultConverter(button -> {
-            if (button != addButton) {
-                return null;
+
+        Button actualButton = (Button) bookingDialog.getDialogPane().lookupButton(addButton);
+        actualButton.addEventFilter(ActionEvent.ACTION, event -> {
+            LocalDate startDate = startDatePicker.getValue();
+            LocalDate endDate = endDatePicker.getValue();
+
+            if (startDate == null | endDate == null){
+                AlertService.showError("Ошибка", "Необходимо выбрать даты началы и конца");
+                return;
             }
 
-            String startDateTimeStr;
-            String endDateTimeStr;
-            try {
-                LocalDate startDate = startDatePicker.getValue();
-                LocalDate endDate = endDatePicker.getValue();
-                String startTimeStr = startTimeField.getText().trim();
-                String endTimeStr = endTimeField.getText().trim();
-                startDateTimeStr = startDate.toString() + " " + startTimeStr;
-                endDateTimeStr = endDate.toString() + " " + endTimeStr;
-                BookingValidator.validateTime(startDateTimeStr);
-                BookingValidator.validateTime(endDateTimeStr);
-            } catch (Exception e){
-                AlertService.showError("Ошибка", "Неверный формат даты");
-                return  null;
-            }
+            String startDateTimeStr = startDate.toString() + " " + startTimeField.getText().trim();
+            String endDateTimeStr = endDate.toString() + " " + endTimeField.getText().trim();
 
             try {
                 BookingValidator.validateTime(startDateTimeStr);
                 BookingValidator.validateTime(endDateTimeStr);
                 bookingManager.bookReschedule(booking.getId(), startDateTimeStr, endDateTimeStr);
-                return booking;
-            } catch (Exception e) {
-                AlertService.showError("Ошибка", "Конец раньше начала");
-                return null;
+            } catch (Exception e){
+                AlertService.showError("Ошибка", "Неверный формат даты");
+                event.consume();
             }
         });
-        return bookingDialog.showAndWait().isPresent();
 
+        bookingDialog.setResultConverter(button -> {
+            if (button == addButton) {
+                return booking;
+            }
+            return null;
+        });
+        return bookingDialog.showAndWait().isPresent();
     }
     public static Optional<Booking> showAddDialog(BookingManager bookingManager, InstrumentManager instrumentManager) {
         Dialog<Booking> bookingDialog = new Dialog<>();
@@ -149,45 +136,46 @@ public class BookingDialog {
 
         bookingDialog.getDialogPane().setContent(form);
 
-        bookingDialog.setResultConverter(button -> {
-            if (button != addButton){
-               return null;
-            }
+        long[] createdBookId = new long[1];
 
+        Button actualButton = (Button) bookingDialog.getDialogPane().lookupButton(addButton);
+        actualButton.addEventFilter(ActionEvent.ACTION, event -> {
+                    Instrument instrument = instBox.getValue();
 
-            Optional<Instrument> instrument = Optional.ofNullable(instBox.getValue());
-            if (instrument.isEmpty()) {
-                AlertService.showError("Ошибка.", "Введите Id прибора");
+                    if (instrument == null) {
+                        AlertService.showError("Ошибка", "Выберите прибор");
+                        event.consume();
+                        return;
+                    }
 
-            }
-            long bookId;
-            long id;
-            String startDateTimeStr;
-            String endDateTimeStr;
-           try {
-               id = instrument.get().getId();
-               LocalDate startDate = startDatePicker.getValue();
-               LocalDate endDate = endDatePicker.getValue();
-               String startTimeStr = startTimeField.getText().trim();
-               String endTimeStr = endTimeField.getText().trim();
-               startDateTimeStr = startDate.toString() + " " + startTimeStr;
-                endDateTimeStr = endDate.toString() + " " + endTimeStr;
-               BookingValidator.validateTime(startDateTimeStr);
-               BookingValidator.validateTime(endDateTimeStr);
-           } catch (Exception e){
-               AlertService.showError("Ошибка", "Неверный формат даты");
-               return  null;
-           }
+                    LocalDate startDate = startDatePicker.getValue();
+                    LocalDate endDate = endDatePicker.getValue();
 
-try{
-               bookId = bookingManager.createBook(id,startDateTimeStr ,endDateTimeStr, "System");
-            } catch (Exception e) {
-                AlertService.showError("Ошибка", "Конец не может быть раньше начала");
+                    if (startDate == null | endDate == null) {
+                        AlertService.showError("Ошибка", "Необходимо выбрать даты начала и конца");
+                        event.consume();
+                        return;
+                    }
+
+                    String startDateTimeStr = startDate.toString() + " " + startTimeField.getText().trim();
+                    String endDateTimeStr = endDate.toString() + " " + endTimeField.getText().trim();
+
+                    try {
+                        BookingValidator.validateTime(startDateTimeStr);
+                        BookingValidator.validateTime(endDateTimeStr);
+                        createdBookId[0] = bookingManager.createBook(instrument.getId(), startDateTimeStr, endDateTimeStr, "System");
+                    } catch (Exception e) {
+                        AlertService.showError("Ошибка", "Неверный формат даты");
+                        event.consume();
+                    }
+                });
+
+            bookingDialog.setResultConverter(button -> {
+                if (button == addButton) {
+                    return bookingManager.getBookById(createdBookId[0]);
+                }
                 return null;
-            }
-            return bookingManager.getBookById(bookId);
-        });
-
-        return bookingDialog.showAndWait();
-    }
+            });
+            return bookingDialog.showAndWait();
+        }
 }

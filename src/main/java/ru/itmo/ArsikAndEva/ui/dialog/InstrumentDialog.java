@@ -1,5 +1,6 @@
 package ru.itmo.ArsikAndEva.ui.dialog;
 
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -59,11 +60,8 @@ public class InstrumentDialog {
 
         instrumentDialog.getDialogPane().setContent(form);
 
-        instrumentDialog.setResultConverter(button -> {
-            if (button != addButton){
-                return null;
-            }
-
+        Button actualButton = (Button) instrumentDialog.getDialogPane().lookupButton(addButton);
+        actualButton.addEventFilter(ActionEvent.ACTION, event -> {
             String name = nameField.getText().trim();
             String inventoryNumber = inventoryNumberField.getText().trim();
             String location = locationField.getText().trim();
@@ -73,30 +71,46 @@ public class InstrumentDialog {
 
             if (name.isBlank()) {
                 AlertService.showError("Ошибка.", "Название прибора не может быть пустым!");
-                return null;
+                event.consume();
+                return;
             }
 
             if (inventoryNumber.isBlank()){
                 AlertService.showError("Ошибка.", "Инвентарный номер должен быть заполнен!");
-                return null;
+                event.consume();
+                return;
             }
 
             if (location.isBlank()){
                 AlertService.showError("Ошибка.", "Напишите где находится прибор!");
-                return null;
+                event.consume();
+                return;
             }
 
             if (type == null){
                 AlertService.showError("Ошибка.", "Выберите тип прибора!");
-                return null;
+                event.consume();
+                return;
             }
 
             if (status == null){
                 AlertService.showError("Ошибка.", "Выберите статус прибора!");
-                return null;
+                event.consume();
+                return;
             }
+        });
 
-            return new Instrument(name, type, inventoryNumber, location, status);
+        instrumentDialog.setResultConverter(button -> {
+            if (button == addButton){
+                return new Instrument(
+                        nameField.getText().trim(),
+                        typeBox.getValue(),
+                        inventoryNumberField.getText().trim(),
+                        locationField.getText().trim(),
+                        statusBox.getValue()
+                );
+            }
+            return null;
         });
 
         return instrumentDialog.showAndWait();
