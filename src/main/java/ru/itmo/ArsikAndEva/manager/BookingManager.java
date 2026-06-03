@@ -38,7 +38,7 @@ public class BookingManager {
 
         List<Booking> byInstrument = findByInId(instrumentId);
         for (Booking booking : byInstrument) {
-            if (booking != null && booking.getStatus() == BookingStatus.ACTIVE && (booking.getEndAt().isAfter(start) || booking.getStartAt().isBefore(end))) {
+            if (booking != null && booking.getStatus() == BookingStatus.ACTIVE && !(booking.getEndAt().isAfter(start) || booking.getStartAt().isBefore(end))) {
                 throw new ValidationException("Этот инструмент уже забронирован на это время");
             }
         }

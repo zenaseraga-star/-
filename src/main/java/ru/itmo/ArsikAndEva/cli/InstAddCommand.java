@@ -4,21 +4,27 @@ import ru.itmo.ArsikAndEva.manager.InstrumentManager;
 import ru.itmo.ArsikAndEva.model.Instrument;
 import ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
 import ru.itmo.ArsikAndEva.model.enums.InstrumentType;
+import ru.itmo.ArsikAndEva.users.SessionManager;
 
 import java.util.Scanner;
 
 public class InstAddCommand implements Command{
     private final Scanner scanner;
     private final InstrumentManager instrumentManager;
+    private final SessionManager sessionManager;
 
-    public InstAddCommand(InstrumentManager instrumentManager) {
+    public InstAddCommand(InstrumentManager instrumentManager, SessionManager sessionManager) {
+        this.sessionManager = sessionManager;
         this.scanner = new Scanner(System.in);
         this.instrumentManager = instrumentManager;
     }
 
     @Override
     public void execute(String[] args) {
-        String name = "";
+        if(!sessionManager.isExistUser()){
+            System.out.println("У вас нет прав для этой команды");
+            return;
+        } String name = "";
         while (name.isBlank()){
             System.out.print("Введите имя прибора: ");
             name = scanner.nextLine().trim();

@@ -8,6 +8,7 @@ import ru.itmo.ArsikAndEva.manager.InstrumentManager;
 import ru.itmo.ArsikAndEva.model.Instrument;
 import ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
 import ru.itmo.ArsikAndEva.model.enums.ReturnCondition;
+import ru.itmo.ArsikAndEva.users.SessionManager;
 
 
 import java.util.Scanner;
@@ -16,17 +17,22 @@ public class CheckoutReturnCommand implements Command{
     private final CheckoutManager checkoutManager;
     private final Scanner scanner;
     private final InstrumentManager instrumentManager;
+    private final SessionManager sessionManager;
 
-    public CheckoutReturnCommand(InstrumentManager instrumentManager, CheckoutManager checkoutManager, Scanner scanner) {
+    public CheckoutReturnCommand(InstrumentManager instrumentManager, CheckoutManager checkoutManager, Scanner scanner, SessionManager sessionManager) {
         this.checkoutManager = checkoutManager;
         this.instrumentManager = instrumentManager;
         this.scanner = scanner;
+        this.sessionManager = sessionManager;
     }
 
 
     @Override
     public void execute(String[] args) {
-        try {
+        if(!sessionManager.isExistUser()){
+            System.out.println("У вас нет прав для этой команды");
+            return;
+        }try {
             Instrument instrument = null;
             while (instrument == null) {
                 System.out.print("Введите id прибора: ");

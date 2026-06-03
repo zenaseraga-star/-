@@ -16,8 +16,11 @@ public class HelpCommand implements Command {
         System.out.println("  checkout_list [--open-only]     - список выдач");
         System.out.println("  inst_available                  - доступные приборы");
         System.out.println("  help                            - список команд");
-        System.out.println("  exit                            - выход");
+        System.out.println("  exit                            - завершить сессию");
         System.out.println("  save                            - сохранить данные");
         System.out.println("  load                            - загрузить данные");
+        System.out.println("  register                        - зарегистрировать пользователя");
+        System.out.println("  login                           - войти");
+        System.out.println("  logout                          - выйти из текущего пользователя");
     }
 }

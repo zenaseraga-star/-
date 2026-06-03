@@ -4,6 +4,7 @@ import ru.itmo.ArsikAndEva.manager.InstrumentManager;
 import ru.itmo.ArsikAndEva.model.Checkout;
 import ru.itmo.ArsikAndEva.model.Instrument;
 import ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
+import ru.itmo.ArsikAndEva.users.SessionManager;
 
 import java.time.Instant;
 import java.util.Scanner;
@@ -12,15 +13,21 @@ public class CheckoutTakeCommand implements Command{
     private final InstrumentManager instrumentManager;
     private final CheckoutManager checkoutManager;
     private final Scanner scanner;
+    private final SessionManager sessionManager;
 
-    public CheckoutTakeCommand(InstrumentManager instrumentManager, CheckoutManager checkoutManager, Scanner scanner) {
+    public CheckoutTakeCommand(InstrumentManager instrumentManager, CheckoutManager checkoutManager, Scanner scanner, SessionManager sessionManager) {
         this.instrumentManager = instrumentManager;
         this.checkoutManager = checkoutManager;
         this.scanner = scanner;
+        this.sessionManager = sessionManager;
     }
 
     @Override
     public void execute(String[] args) {
+        if(!sessionManager.isExistUser()){
+            System.out.println("У вас нет прав для этой команды");
+            return;
+        }
         Instrument instrument = null;
         while (instrument == null){
             System.out.print("Введите id прибора: ");

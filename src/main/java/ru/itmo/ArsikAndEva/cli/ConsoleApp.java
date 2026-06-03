@@ -4,6 +4,8 @@ import ru.itmo.ArsikAndEva.manager.BookingManager;
 import ru.itmo.ArsikAndEva.manager.CheckoutManager;
 import ru.itmo.ArsikAndEva.manager.InstrumentManager;
 import ru.itmo.ArsikAndEva.storage.FileStorage;
+import ru.itmo.ArsikAndEva.storage.UserStorage;
+import ru.itmo.ArsikAndEva.users.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +18,9 @@ public class ConsoleApp {
     private final BookingManager bookingManager;
     private final InstrumentManager instrumentManager;
     private final CheckoutManager checkoutManager;
-    private FileStorage storage;
+    private final UserManager userManager;
+    private final FileStorage storage;
+    private final SessionManager sessionManager;
 
 
     public ConsoleApp() {
@@ -25,24 +29,30 @@ public class ConsoleApp {
         this.bookingManager = new BookingManager(instrumentManager);
         this.checkoutManager = new CheckoutManager(instrumentManager);
         this.storage = new FileStorage("data.ser");
+        this.sessionManager = new SessionManager();
+        this.userManager = new UserManager(new UserStorage("users.ser"));
 
 
         commands = new HashMap<>();
-        commands.put("checkout_take", new CheckoutTakeCommand(instrumentManager, checkoutManager, scanner));
-        commands.put("book_create", new BookCreatCommand(instrumentManager, bookingManager, scanner));
+        commands.put("checkout_take", new CheckoutTakeCommand(instrumentManager, checkoutManager, scanner, sessionManager));
+        commands.put("book_create", new BookCreatCommand(instrumentManager, bookingManager, scanner, sessionManager));
         commands.put("book_list", new BookListCommand(bookingManager, scanner));
-        commands.put("book_reschedule", new BookRescheduleCommand(bookingManager, scanner));
-        commands.put("book_cancel", new BookCancelCommand(bookingManager));
+        commands.put("book_reschedule", new BookRescheduleCommand(bookingManager, scanner,sessionManager));
+        commands.put("book_cancel", new BookCancelCommand(bookingManager,sessionManager));
         commands.put("book_show", new BookShowCommand(bookingManager));
-        commands.put("checkout_return", new CheckoutReturnCommand(instrumentManager, checkoutManager, scanner));
+        commands.put("checkout_return", new CheckoutReturnCommand(instrumentManager, checkoutManager, scanner, sessionManager));
         commands.put("checkout_list", new CheckoutListCommand(checkoutManager));
         commands.put("inst_available", new InstAvailableCommand(instrumentManager, bookingManager));
         commands.put("checkout_show", new CheckoutShowCommand(checkoutManager));
-        commands.put("inst_add", new InstAddCommand(instrumentManager));
+        commands.put("inst_add", new InstAddCommand(instrumentManager,sessionManager));
         commands.put("help", new HelpCommand());
-        commands.put("save", new SaveCommand(scanner, bookingManager, instrumentManager,checkoutManager, storage ));
+        commands.put("save", new SaveCommand(scanner, bookingManager, instrumentManager,checkoutManager, sessionManager, storage ));
         commands.put("load", new LoadCommand(scanner, bookingManager, checkoutManager, instrumentManager));
+        commands.put("login", new CommandLogin(scanner, userManager, sessionManager));
+        commands.put("register", new CommandRegister(scanner, userManager, sessionManager ));
+        commands.put("logout", new ExitUserCommand(sessionManager));
     }
+
 
 
     public void start(){

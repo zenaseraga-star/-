@@ -7,6 +7,7 @@ import ru.itmo.ArsikAndEva.manager.CheckoutManager;
 import ru.itmo.ArsikAndEva.manager.InstrumentManager;
 import ru.itmo.ArsikAndEva.storage.AllData;
 import ru.itmo.ArsikAndEva.storage.FileStorage;
+import ru.itmo.ArsikAndEva.users.SessionManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,18 +19,23 @@ public class SaveCommand implements Command{
     private final BookingManager bookingManager;
     private final InstrumentManager instrumentManager;
     private final CheckoutManager checkoutManager;
+    private final SessionManager sessionManager;
     private FileStorage storage;
-    public SaveCommand(Scanner scanner, BookingManager bookingManager, InstrumentManager instrumentManager, CheckoutManager checkoutManager, FileStorage storage){
+    public SaveCommand(Scanner scanner, BookingManager bookingManager, InstrumentManager instrumentManager, CheckoutManager checkoutManager, SessionManager sessionManager, FileStorage storage){
         this.bookingManager = bookingManager;
         this.scanner =scanner;
         this.checkoutManager =checkoutManager;
         this.instrumentManager =instrumentManager;
+        this.sessionManager = sessionManager;
         this.storage = storage;
     }
 
     @Override
     public void execute(String[] args) {
-        String filepath = null;
+        if(!sessionManager.isExistUser()){
+            System.out.println("У вас нет прав для этой команды");
+            return;
+        }String filepath = null;
 
         if(args.length > 1 && args[1] != null && !args[1].toUpperCase().trim().isEmpty()) {
                 filepath = args[1];
