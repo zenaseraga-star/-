@@ -8,10 +8,12 @@ import ru.itmo.ArsikAndEva.manager.InstrumentManager;
 import ru.itmo.ArsikAndEva.model.Checkout;
 import ru.itmo.ArsikAndEva.model.Instrument;
 import ru.itmo.ArsikAndEva.ui.alert.AlertService;
+import ru.itmo.ArsikAndEva.users.SessionManager;
 
 import java.util.Optional;
 
 public class CheckoutDialog {
+
 
     private static GridPane createForm(TextField usernameField, ComboBox<Instrument> instBox, TextArea commentField) {
         GridPane gridPane = new GridPane();
@@ -27,7 +29,7 @@ public class CheckoutDialog {
         return gridPane;
     }
 
-    public static Optional<Checkout> showAddDialog(InstrumentManager instrumentManager) {
+    public static Optional<Checkout> showAddDialog(InstrumentManager instrumentManager, SessionManager sessionManager) {
         Dialog<Checkout> checkoutDialog = new Dialog<>();
         checkoutDialog.setTitle("Окно добавления записи");
         checkoutDialog.setHeaderText("Информация о выдаче прибора");
@@ -59,7 +61,7 @@ public class CheckoutDialog {
                 return new Checkout(
                         instBox.getValue().getId(),
                         usernameField.getText().trim(),
-                        commentField.getText()
+                        commentField.getText(), sessionManager.getCurrentUser().getUsId()
                 );
             }
             return null;

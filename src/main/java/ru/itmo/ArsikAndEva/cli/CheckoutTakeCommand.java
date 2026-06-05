@@ -64,7 +64,7 @@ public class CheckoutTakeCommand implements Command{
         System.out.print("Комментарий (можно пусто): ");
         String comment = this.scanner.nextLine();
 
-        Checkout checkout = new Checkout(0, instrument.getId(), username, comment, Instant.now(), null, null, "System", Instant.now());
+        Checkout checkout = new Checkout(0, instrument.getId(), username, comment, Instant.now(), null, null, sessionManager.getCurrentUser().getUsId(), Instant.now());
         checkoutManager.add(checkout);
 
         System.out.println("OK checkout_id = " + checkout.getId());

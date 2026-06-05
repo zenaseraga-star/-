@@ -15,6 +15,7 @@ import ru.itmo.ArsikAndEva.model.Instrument;
 import ru.itmo.ArsikAndEva.model.enums.ReturnCondition;
 import ru.itmo.ArsikAndEva.ui.alert.AlertService;
 import ru.itmo.ArsikAndEva.ui.dialog.CheckoutDialog;
+import ru.itmo.ArsikAndEva.users.SessionManager;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -24,10 +25,12 @@ public class CheckoutTab extends VBox {
     private final InstrumentManager instrumentManager;
     private final TableView<Checkout> table = new TableView<>();
     private final ObservableList<Checkout> data = FXCollections.observableArrayList();
+    private final SessionManager sessionManager;
 
-    public CheckoutTab(CheckoutManager checkoutManager, InstrumentManager instrumentManager) {
+    public CheckoutTab(CheckoutManager checkoutManager, InstrumentManager instrumentManager, SessionManager sessionManager) {
         this.checkoutManager = checkoutManager;
         this.instrumentManager = instrumentManager;
+        this.sessionManager = sessionManager;
 
         setSpacing(10);
         setPadding(new Insets(10));
@@ -87,7 +90,7 @@ public class CheckoutTab extends VBox {
     }
 
     private void addCheckout() {
-        Optional<Checkout> checkout = CheckoutDialog.showAddDialog(instrumentManager);
+        Optional<Checkout> checkout = CheckoutDialog.showAddDialog(instrumentManager, sessionManager);
 
         checkout.ifPresent(chk -> {
             try {

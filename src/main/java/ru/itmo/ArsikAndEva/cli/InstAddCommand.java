@@ -62,7 +62,7 @@ public class InstAddCommand implements Command{
             }
         }
 
-        Instrument instrument = new Instrument(name, instrumentType, inventoryNumber, location, instrumentStatus);
+        Instrument instrument = new Instrument(name, instrumentType, inventoryNumber, location, instrumentStatus, sessionManager.getCurrentUser().getUsId());
         instrumentManager.add(instrument);
 
         System.out.println("Инструмент добавлен! Ура-ура! Вперед-вперед! Id инструмента: " + instrument.getId());

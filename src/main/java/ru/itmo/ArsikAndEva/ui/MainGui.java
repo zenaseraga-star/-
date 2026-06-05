@@ -1,6 +1,7 @@
 package ru.itmo.ArsikAndEva.ui;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -15,9 +16,13 @@ import ru.itmo.ArsikAndEva.manager.CheckoutManager;
 import ru.itmo.ArsikAndEva.manager.InstrumentManager;
 import ru.itmo.ArsikAndEva.storage.AllData;
 import ru.itmo.ArsikAndEva.storage.FileStorage;
+import ru.itmo.ArsikAndEva.storage.UserStorage;
+import ru.itmo.ArsikAndEva.ui.dialog.UserDialog;
 import ru.itmo.ArsikAndEva.ui.tab.BookingTab;
 import ru.itmo.ArsikAndEva.ui.tab.CheckoutTab;
 import ru.itmo.ArsikAndEva.ui.tab.InstrumentTab;
+import ru.itmo.ArsikAndEva.users.SessionManager;
+import ru.itmo.ArsikAndEva.users.UserManager;
 
 import java.io.File;
 import java.util.HashMap;
@@ -28,15 +33,24 @@ public class MainGui extends Application {
     private InstrumentTab instrumentTabContent;
     private BookingTab bookingTabContent;
     private CheckoutTab checkoutTabContent;
-
+private  SessionManager sessionManager = new SessionManager();
     private final InstrumentManager instrumentManager = new InstrumentManager();
     private final BookingManager bookingManager = new BookingManager(instrumentManager);
     private final CheckoutManager checkoutManager = new CheckoutManager(instrumentManager);
-
+private final UserManager userManager = new UserManager(new UserStorage("users.ser"));
     private final FileStorage fileStorage = new FileStorage("data.ser");
+
 
     @Override
     public void start(Stage primaryStage) {
+        UserDialog authDialog = new UserDialog(userManager, sessionManager);
+        authDialog.showAndWait();
+        if (!sessionManager.isExistUser()) {
+            System.out.println("Авторизация не выполнена");
+            Platform.exit();
+            return;
+        }
+
         primaryStage.setTitle("Система управления лабораторией");
 
         loadDataOnStart();
@@ -60,21 +74,21 @@ public class MainGui extends Application {
     }
 
     private Tab createInstrumentTab() {
-        this.instrumentTabContent = new InstrumentTab(instrumentManager);
+        this.instrumentTabContent = new InstrumentTab(instrumentManager, sessionManager);
         Tab tab = new Tab("Приборы", instrumentTabContent);
         tab.setClosable(false);
         return tab;
     }
 
     private Tab createBookingTab() {
-        this.bookingTabContent = new BookingTab(bookingManager, instrumentManager);
+        this.bookingTabContent = new BookingTab(bookingManager, instrumentManager, sessionManager);
         Tab bookingTab = new Tab("Бронирования", bookingTabContent);
         bookingTab.setClosable(false);
         return bookingTab;
     }
 
     private Tab createCheckoutTab() {
-        this.checkoutTabContent = new CheckoutTab(checkoutManager, instrumentManager);
+        this.checkoutTabContent = new CheckoutTab(checkoutManager, instrumentManager, sessionManager);
         Tab checkoutTab = new Tab("Выдачи", checkoutTabContent);
         checkoutTab.setClosable(false);
         return checkoutTab;

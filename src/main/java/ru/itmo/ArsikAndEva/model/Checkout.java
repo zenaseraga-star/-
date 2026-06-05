@@ -23,21 +23,21 @@ public final class Checkout implements Serializable {
     // Состояние при возврате: OK или DAMAGED. Может быть null, если ещё не вернули.
     private ReturnCondition returnCondition;
     // Кто оформил выдачу (логин). На ранних этапах можно "SYSTEM".
-    private String ownerUsername;
+    private Long ownerId;
     // Когда запись создана. Программа ставит автоматически.
     private Instant createdAt;
 
-    public Checkout(long instrumentId, String username, String comment) {
+    public Checkout(long instrumentId, String username, String comment, Long ownerId) {
         this.instrumentId = instrumentId;
         this.username = username;
         this.comment = comment;
         this.takenAt = Instant.now();
         this.createdAt = Instant.now();
-        this.ownerUsername = "SYSTEM";
+        this.ownerId = ownerId;
 
     }
 
-    public Checkout(long id, long instrumentId,  String username, String comment, Instant takenAt, Instant returnedAt, ReturnCondition returnCondition, String ownerUsername, Instant createdAt ){
+    public Checkout(long id, long instrumentId,  String username, String comment, Instant takenAt, Instant returnedAt, ReturnCondition returnCondition, Long ownerId, Instant createdAt ){
         this.id = id;
         this.instrumentId = instrumentId;
         this.username = username;
@@ -45,7 +45,7 @@ public final class Checkout implements Serializable {
         this.takenAt = takenAt;
         this.returnedAt = returnedAt;
         this.returnCondition = returnCondition;
-        this.ownerUsername = ownerUsername;
+        this.ownerId = ownerId;
         this.createdAt = createdAt;
     }
 
@@ -105,12 +105,12 @@ public final class Checkout implements Serializable {
         this.returnCondition = returnCondition;
     }
 
-    public String getOwnerUsername() {
-        return ownerUsername;
+    public Long getOwnerId() {
+        return ownerId;
     }
 
-    public void setOwnerUsername(String ownerUsername) {
-        this.ownerUsername = ownerUsername;
+    public void setOwnerId(Long ownerUsername) {
+        this.ownerId = ownerUsername;
     }
 
     public Instant getCreatedAt() {

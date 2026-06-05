@@ -21,8 +21,8 @@ public class CheckoutValidator implements Validator<Checkout> {
             throw new ValidationException("Кoмментарий не может быть длиннее 128 символов");
         }
 
-        if (checkout.getOwnerUsername() == null || checkout.getOwnerUsername().isBlank()) {
-            throw new ValidationException("Должно быть указано, кто оформлял выдачу");
+        if (checkout.getOwnerId() == null) {
+            throw new ValidationException("Должно быть указано, кто оформлял выдачу(ID)");
         }
     }
 }

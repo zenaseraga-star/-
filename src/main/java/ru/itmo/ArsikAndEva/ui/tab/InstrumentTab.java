@@ -15,6 +15,7 @@ import ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
 import ru.itmo.ArsikAndEva.model.enums.InstrumentType;
 import ru.itmo.ArsikAndEva.ui.alert.AlertService;
 import ru.itmo.ArsikAndEva.ui.dialog.InstrumentDialog;
+import ru.itmo.ArsikAndEva.users.SessionManager;
 
 import java.util.Optional;
 
@@ -23,10 +24,12 @@ public class InstrumentTab extends VBox {
     private final InstrumentManager instrumentManager;
     private final TableView<Instrument> table = new TableView<>();
     private final ObservableList<Instrument> data = FXCollections.observableArrayList();
+    private final SessionManager sessionManager;
 
 
-    public InstrumentTab(InstrumentManager instrumentManager) {
+    public InstrumentTab(InstrumentManager instrumentManager, SessionManager sessionManager) {
         this.instrumentManager = instrumentManager;
+        this.sessionManager = sessionManager;
 
         setSpacing(10);
         setPadding(new Insets(10));
@@ -76,7 +79,7 @@ public class InstrumentTab extends VBox {
     }
 
     private void addInstrument(){
-        Optional<Instrument> instrument = InstrumentDialog.showAddDialog();
+        Optional<Instrument> instrument = InstrumentDialog.showAddDialog(sessionManager);
 
         instrument.ifPresent(inst -> {
             instrumentManager.add(inst);

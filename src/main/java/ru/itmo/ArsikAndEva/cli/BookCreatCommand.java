@@ -64,7 +64,7 @@ public class BookCreatCommand implements Command {
                     System.out.println("Введите время конца правильно!");
                 }
             }
-            long bookId = bookingManager.createBook(instrumentId, startAt, endAt, "System");
+            long bookId = bookingManager.createBook(instrumentId, startAt, endAt, sessionManager.getCurrentUser().getUsId());
             System.out.println(" OK book_id =" + bookId);
 
         } catch (NumberFormatException e) {

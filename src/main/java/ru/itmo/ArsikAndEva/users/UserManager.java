@@ -2,8 +2,9 @@ package ru.itmo.ArsikAndEva.users;
 
 import ru.itmo.ArsikAndEva.exception.ValidationException;
 import ru.itmo.ArsikAndEva.storage.UserStorage;
+import ru.itmo.ArsikAndEva.validator.UserValidator;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -13,6 +14,7 @@ public class UserManager {
     private final HashMap<String, User> logUs = new HashMap<>();
     private final AtomicLong idCounter = new AtomicLong(1);
     private final UserStorage storage;
+    UserValidator userValidator = new UserValidator();
 
     public UserManager(UserStorage storage) {
         this.storage = storage;
@@ -28,17 +30,26 @@ private void saveUsers(){
 private void loadUsers(){
         try {
             HashMap<Long, User> users = storage.load();
-            for(User us : users.values()){
+            idUs.clear();
+            logUs.clear();
+            for (User us : users.values()) {
+                userValidator.validate(us);
                 idUs.put(us.getUsId(), us);
                 logUs.put(us.getLogin(), us);
                 if (us.getUsId() >= idCounter.get()) {
                     idCounter.set(us.getUsId() + 1);
                 }
+
             }
-        } catch (IOException e) {
-            System.out.println("Ошибка при загрузке"+ e.getMessage());
-        } catch (ClassNotFoundException e) {
+        }
+        catch (FileNotFoundException e) {
             System.out.println("Файл не найден");
+        }
+        catch (InvalidObjectException | OptionalDataException | StreamCorruptedException | ClassNotFoundException e){
+                System.out.println("Файл поврежден");
+            }
+        catch (IOException e) {
+            System.out.println("Ошибка при загрузке"+ e.getMessage());
         }
 }
     public User register(String login, String password) {

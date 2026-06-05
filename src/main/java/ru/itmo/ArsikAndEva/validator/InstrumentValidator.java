@@ -38,8 +38,8 @@ public class InstrumentValidator implements Validator<Instrument> {
             throw new ValidationException("статус прибора должен быть указан");
         }
 
-        if (instrument.getOwnerUsername() == null || instrument.getOwnerUsername().isBlank()) {
-            throw new ValidationException("владелец записи должен быть указан");
+        if (instrument.getOwnerId() == null) {
+            throw new ValidationException("владелец записи должен быть указан(ID)");
         }
     }
 }

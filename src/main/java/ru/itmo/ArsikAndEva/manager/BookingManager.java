@@ -26,7 +26,7 @@ public class BookingManager {
 
     private BookingValidator bookingValidator = new BookingValidator();
 
-    public long createBook(long instrumentId, String startAt, String endAt, String owner) {
+    public long createBook(long instrumentId, String startAt, String endAt, Long owner) {
         instrumentManager.getById(instrumentId).orElseThrow(() -> new EntityNotFoundException("Инструмент с таким id не найден"));
 
 
@@ -38,7 +38,7 @@ public class BookingManager {
 
         List<Booking> byInstrument = findByInId(instrumentId);
         for (Booking booking : byInstrument) {
-            if (booking != null && booking.getStatus() == BookingStatus.ACTIVE && !(booking.getEndAt().isAfter(start) || booking.getStartAt().isBefore(end))) {
+            if (booking != null && booking.getStatus() == BookingStatus.ACTIVE && !((start.isBefore(booking.getStartAt()) && end.isBefore(booking.getStartAt()) || start.isAfter(booking.getEndAt())))) {
                 throw new ValidationException("Этот инструмент уже забронирован на это время");
             }
         }
@@ -48,7 +48,7 @@ public class BookingManager {
         book.setStartAt(start);
         book.setEndAt(end);
         book.setInstrumentId(instrumentId);
-        book.setOwnerUsername(owner);
+        book.setOwnerId(owner);
         book.setStatus(BookingStatus.ACTIVE);
         bookingValidator.validate(book);
         books.put(newId, book);
@@ -109,14 +109,14 @@ public class BookingManager {
         return books.get(bookId);
     }
 
-    public Booking updateBooking(long Id, String startAt, String endAt, String owner) {
+    public Booking updateBooking(long Id, String startAt, String endAt, Long owner) {
         Instant start = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.UTC).parse(startAt));
         Instant end = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.UTC).parse(endAt));
         Booking book = getBookById(Id);
         bookingValidator.validate(book);
         book.setStartAt(start);
         book.setEndAt(end);
-        book.setOwnerUsername(owner);
+        book.setOwnerId(owner);
         bookingValidator.validate(book);
         return book;
     }

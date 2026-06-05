@@ -9,6 +9,7 @@ import ru.itmo.ArsikAndEva.manager.InstrumentManager;
 import ru.itmo.ArsikAndEva.model.Booking;
 import ru.itmo.ArsikAndEva.model.Instrument;
 import ru.itmo.ArsikAndEva.ui.alert.AlertService;
+import ru.itmo.ArsikAndEva.users.SessionManager;
 import ru.itmo.ArsikAndEva.validator.BookingValidator;
 
 import java.time.LocalDate;
@@ -106,7 +107,7 @@ public class BookingDialog {
         });
         return bookingDialog.showAndWait().isPresent();
     }
-    public static Optional<Booking> showAddDialog(BookingManager bookingManager, InstrumentManager instrumentManager) {
+    public static Optional<Booking> showAddDialog(BookingManager bookingManager, InstrumentManager instrumentManager, SessionManager sessionManager) {
         Dialog<Booking> bookingDialog = new Dialog<>();
         bookingDialog.setTitle("Окно создания брони");
         bookingDialog.setHeaderText("Информация о броне");
@@ -163,7 +164,7 @@ public class BookingDialog {
                     try {
                         BookingValidator.validateTime(startDateTimeStr);
                         BookingValidator.validateTime(endDateTimeStr);
-                        createdBookId[0] = bookingManager.createBook(instrument.getId(), startDateTimeStr, endDateTimeStr, "System");
+                        createdBookId[0] = bookingManager.createBook(instrument.getId(), startDateTimeStr, endDateTimeStr, sessionManager.getCurrentUser().getUsId());
                     } catch (Exception e) {
                         AlertService.showError("Ошибка", "Неверный формат даты");
                         event.consume();

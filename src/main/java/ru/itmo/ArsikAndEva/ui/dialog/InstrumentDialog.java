@@ -8,10 +8,17 @@ import ru.itmo.ArsikAndEva.model.Instrument;
 import ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
 import ru.itmo.ArsikAndEva.model.enums.InstrumentType;
 import ru.itmo.ArsikAndEva.ui.alert.AlertService;
+import ru.itmo.ArsikAndEva.users.SessionManager;
 
 import java.util.Optional;
 
 public class InstrumentDialog {
+    private final SessionManager sessionManager;
+
+    public InstrumentDialog(SessionManager sessionManager) {
+        this.sessionManager = sessionManager;
+    }
+
 
     private static GridPane createForm(TextField nameField, ComboBox<InstrumentType> typeBox,
                                        TextField inventoryNumberField, TextField locationField,
@@ -31,7 +38,7 @@ public class InstrumentDialog {
         return gridPane;
     }
 
-    public static Optional<Instrument> showAddDialog() {
+    public static Optional<Instrument> showAddDialog(SessionManager sessionManager) {
         Dialog<Instrument> instrumentDialog = new Dialog<>();
         instrumentDialog.setTitle("Окно добавления прибора");
         instrumentDialog.setHeaderText("Информация о приборе");
@@ -107,7 +114,9 @@ public class InstrumentDialog {
                         typeBox.getValue(),
                         inventoryNumberField.getText().trim(),
                         locationField.getText().trim(),
-                        statusBox.getValue()
+                        statusBox.getValue(),
+                        sessionManager.getCurrentUser().getUsId()
+
                 );
             }
             return null;

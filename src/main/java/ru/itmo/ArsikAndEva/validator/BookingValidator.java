@@ -15,8 +15,8 @@ public class BookingValidator implements Validator<Booking> {
         if(booking.getStatus() == null){
             throw new ValidationException("У брони должен быть статус");
         }
-        if(booking.getOwnerUsername() == null || booking.getOwnerUsername().isEmpty() || booking.getOwnerUsername().isBlank()){
-            throw new ValidationException("Надо указать свой логин");
+        if(booking.getOwnerId() == null){
+            throw new ValidationException("У брони должен быть указан ID пользователя");
         }
         if(booking.getStartAt().isAfter(booking.getEndAt())){
             throw new ValidationException(" Время начала брони не может быть после конца");

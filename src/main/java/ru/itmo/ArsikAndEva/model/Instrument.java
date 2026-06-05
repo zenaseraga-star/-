@@ -15,18 +15,18 @@ public class Instrument implements Serializable {
     private String inventoryNumber;
     private String location;
     private InstrumentStatus status;
-    private String ownerUsername;
+    private Long ownerId;
     private final Instant createdAt;
     private Instant updatedAt;
 
     public Instrument(String name, InstrumentType type, String inventoryNumber,
-                      String location, InstrumentStatus status) {
+                      String location, InstrumentStatus status,Long ownerId) {
         this.name = name;
         this.type = type;
         this.inventoryNumber = inventoryNumber;
         this.location = location;
         this.status = status;
-        this.ownerUsername = "System";
+        this.ownerId = ownerId;
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
     }
@@ -56,8 +56,8 @@ public class Instrument implements Serializable {
         return status;
     }
 
-    public String getOwnerUsername() {
-        return ownerUsername;
+    public Long getOwnerId() {
+        return ownerId;
     }
 
     public Instant getCreatedAt() {
@@ -93,8 +93,8 @@ public class Instrument implements Serializable {
         this.status = status;
     }
 
-    public void setOwnerUsername(String ownerUsername) {
-        this.ownerUsername = ownerUsername;
+    public void setOwnerId(Long ownerId) {
+        this.ownerId = ownerId;
     }
 
     public void setUpdatedAt(Instant updatedAt) {

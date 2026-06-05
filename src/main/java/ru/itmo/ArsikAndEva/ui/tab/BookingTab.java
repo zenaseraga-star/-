@@ -18,6 +18,7 @@ import ru.itmo.ArsikAndEva.model.Booking;
 import ru.itmo.ArsikAndEva.model.enums.BookingStatus;
 import ru.itmo.ArsikAndEva.ui.alert.AlertService;
 import ru.itmo.ArsikAndEva.ui.dialog.BookingDialog;
+import ru.itmo.ArsikAndEva.users.SessionManager;
 
 import java.util.Optional;
 
@@ -26,10 +27,12 @@ public class BookingTab extends VBox {
     private final TableView<Booking> table = new TableView<>();
     private final ObservableList<Booking> data = FXCollections.observableArrayList();
     private final InstrumentManager instrumentManager;
+    private final SessionManager sessionManager;
 
-    public BookingTab(BookingManager bookingManager, InstrumentManager instrumentManager) {
+    public BookingTab(BookingManager bookingManager, InstrumentManager instrumentManager, SessionManager sessionManager) {
         this.bookingManager = bookingManager;
         this.instrumentManager = instrumentManager;
+        this.sessionManager = sessionManager;
         setSpacing(10);
         setPadding(new Insets(10));
         setupTable();
@@ -87,7 +90,7 @@ public class BookingTab extends VBox {
     }
 
     private void addBook() {
-        Optional<Booking> booking = BookingDialog.showAddDialog(bookingManager, instrumentManager);
+        Optional<Booking> booking = BookingDialog.showAddDialog(bookingManager, instrumentManager, sessionManager);
         refreshData();
     }
 

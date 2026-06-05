@@ -23,19 +23,19 @@ public final class Booking implements Serializable {
     // Статус бронирования: ACTIVE или CANCELLED.
     private BookingStatus status;
     // Кто забронировал (логин). На ранних этапах можно "SYSTEM".
-    private String ownerUsername;
+    private Long ownerId;
     // Когда создали бронь. Программа ставит автоматически.
     private final Instant createdAt;
     // Когда обновляли. Программа обновляет автоматически.
     private  Instant updatedAt;
 
-    public Booking( long id, long instrumentId,  Instant startAt, Instant endAt, BookingStatus status, String ownerUsername, Instant createdAt, Instant updatedAt){
+    public Booking( long id, long instrumentId,  Instant startAt, Instant endAt, BookingStatus status, Long ownerId, Instant createdAt, Instant updatedAt){
         this.id = id;
         this.instrumentId = instrumentId;
         this.startAt = startAt;
         this.endAt = endAt;
         this.status = status;
-        this.ownerUsername = ownerUsername;
+        this.ownerId = ownerId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -82,8 +82,8 @@ public final class Booking implements Serializable {
         this.status = status;
     }
 
-    public String getOwnerUsername() {
-        return ownerUsername;
+    public Long getOwnerId() {
+        return ownerId;
     }
 
     public Instant getCreatedAt() {
@@ -94,8 +94,8 @@ public final class Booking implements Serializable {
         return updatedAt;
     }
 
-    public void setOwnerUsername(String ownerUsername) {
-        this.ownerUsername = ownerUsername;
+    public void setOwnerId(Long ownerId) {
+        this.ownerId = ownerId;
     }
 
     public void setUpdatedAt(Instant updatedAt) {
