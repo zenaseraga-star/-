@@ -39,7 +39,7 @@ public class BookingManager {
         }
     }
 
-    public long createBook(long instrumentId, String startAt, String endAt, Long owner) {
+    public long createBook(long instrumentId, String startAt, String endAt, Long owner, String ownerName) {
         instrumentManager.getById(instrumentId).orElseThrow(() -> new EntityNotFoundException("Инструмент с таким id не найден"));
 
         Instant start = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.systemDefault()).parse(startAt));
@@ -56,7 +56,7 @@ public class BookingManager {
         }
 
         Instant now = Instant.now();
-        Booking book = new Booking(0, instrumentId, start, end, BookingStatus.ACTIVE, owner, now, now);
+        Booking book = new Booking(0, instrumentId, start, end, BookingStatus.ACTIVE, owner, now, now, ownerName);
         bookingValidator.validate(book);
 
         try{

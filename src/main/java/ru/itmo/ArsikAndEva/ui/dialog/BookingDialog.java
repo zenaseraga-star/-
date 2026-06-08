@@ -16,19 +16,19 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 public class BookingDialog {
-    private static GridPane createForm(ComboBox<Instrument> insBox,  DatePicker endDatePicker,
+    private static GridPane createForm(TextField ownerName, ComboBox<Instrument> insBox,  DatePicker endDatePicker,
                                        DatePicker startDatePicker, TextField startTimeField,  TextField endTimeField){
         GridPane gridPane = new GridPane();
 
         gridPane.setPadding(new Insets(10));
         gridPane.setVgap(10);
         gridPane.setHgap(10);
-
-        gridPane.addRow(0, new Label("ID прибора"), insBox);
-        gridPane.addRow(1, new Label("Дата начала:"), startDatePicker);
-        gridPane.addRow(2, new Label("Время начала"), startTimeField);
-        gridPane.addRow(3, new Label("Дата конца:"), endDatePicker);
-        gridPane.addRow(4, new Label("Время конца"), endTimeField);
+        gridPane.addRow(0, new Label("ФИО клиента"), ownerName);
+        gridPane.addRow(1, new Label("ID прибора"), insBox);
+        gridPane.addRow(2, new Label("Дата начала:"), startDatePicker);
+        gridPane.addRow(3, new Label("Время начала"), startTimeField);
+        gridPane.addRow(4, new Label("Дата конца:"), endDatePicker);
+        gridPane.addRow(5, new Label("Время конца"), endTimeField);
 
         return gridPane;
     }
@@ -82,7 +82,7 @@ public class BookingDialog {
             LocalDate endDate = endDatePicker.getValue();
 
             if (startDate == null | endDate == null){
-                AlertService.showError("Ошибка", "Необходимо выбрать даты началы и конца");
+                AlertService.showError("Ошибка", "Необходимо выбрать даты начала и конца");
                 return;
             }
 
@@ -116,7 +116,7 @@ public class BookingDialog {
         bookingDialog.getDialogPane().getButtonTypes().addAll(addButton, ButtonType.CANCEL);
 //        ComboBox<String> startTimeBox = new ComboBox<>();
 //        startTimeBox.getItems().addAll("00", "01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23");
-
+        TextField userName = new TextField();
         ComboBox<Instrument> instBox = new ComboBox<>();
         instBox.getItems().addAll(instrumentManager.getAll());
         TextField startTimeField = new TextField();
@@ -128,6 +128,7 @@ public class BookingDialog {
         endDatePicker.setPromptText("Выберите дату конца");
 
         GridPane form = createForm(
+                userName,
                 instBox,
                 endDatePicker,
                 startDatePicker,
@@ -148,7 +149,12 @@ public class BookingDialog {
                         event.consume();
                         return;
                     }
-
+                    String owner = userName.getText();
+   if(owner == null){
+       AlertService.showError("Ошибка", "Необходимо указать имя");
+       event.consume();
+       return;
+   }
                     LocalDate startDate = startDatePicker.getValue();
                     LocalDate endDate = endDatePicker.getValue();
 
@@ -164,7 +170,7 @@ public class BookingDialog {
                     try {
                         BookingValidator.validateTime(startDateTimeStr);
                         BookingValidator.validateTime(endDateTimeStr);
-                        createdBookId[0] = bookingManager.createBook(instrument.getId(), startDateTimeStr, endDateTimeStr, sessionManager.getCurrentUser().getUsId());
+                        createdBookId[0] = bookingManager.createBook(instrument.getId(), startDateTimeStr, endDateTimeStr, sessionManager.getCurrentUser().getUsId(), owner);
                     } catch (Exception e) {
                         AlertService.showError("Ошибка", "Неверный формат даты");
                         event.consume();

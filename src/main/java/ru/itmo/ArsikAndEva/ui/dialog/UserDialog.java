@@ -34,10 +34,10 @@ public class UserDialog extends Stage {
         TextField loginField = new TextField();
         loginField.setPromptText("Логин");
         loginField.setPrefWidth(200);
-        TextField passwordField = new TextField();
+        PasswordField passwordField = new PasswordField();
         passwordField.setPrefWidth(200);
         passwordField.setPromptText("Пароль");
-        TextField passwordField1 = new TextField();
+        PasswordField passwordField1 = new PasswordField();
         passwordField1.setPrefWidth(200);
         passwordField1.setPromptText("Пароль");
         passwordField1.setVisible(false);

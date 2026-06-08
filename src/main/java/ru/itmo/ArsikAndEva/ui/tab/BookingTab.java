@@ -63,7 +63,7 @@ public class BookingTab extends VBox {
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
 
         TableColumn<Booking, String> ownCol = new TableColumn<>("Владелец");
-        ownCol.setCellValueFactory(new PropertyValueFactory<>("ownerUsername"));
+        ownCol.setCellValueFactory(new PropertyValueFactory<>("ownerName"));
 
         TableColumn<Booking, String> crCol = new TableColumn<>("Создание");
         crCol.setCellValueFactory(new PropertyValueFactory<>("formattedCr"));

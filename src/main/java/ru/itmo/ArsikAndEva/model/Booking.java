@@ -19,6 +19,7 @@ public final class Booking implements Serializable {
     // Время начала бронирования.
     private Instant startAt;
     // Время конца бронирования.
+    private String ownerName;
     private Instant endAt;
     // Статус бронирования: ACTIVE или CANCELLED.
     private BookingStatus status;
@@ -29,7 +30,7 @@ public final class Booking implements Serializable {
     // Когда обновляли. Программа обновляет автоматически.
     private Instant updatedAt;
 
-    public Booking(long id, long instrumentId, Instant startAt, Instant endAt, BookingStatus status, Long ownerId, Instant createdAt, Instant updatedAt) {
+    public Booking(long id, long instrumentId, Instant startAt, Instant endAt, BookingStatus status, Long ownerId, Instant createdAt, Instant updatedAt, String ownerName) {
         this.id = id;
         this.instrumentId = instrumentId;
         this.startAt = startAt;
@@ -38,6 +39,7 @@ public final class Booking implements Serializable {
         this.ownerId = ownerId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.ownerName = ownerName;
     }
 
 
@@ -45,7 +47,12 @@ public final class Booking implements Serializable {
         this.id = id;
         this.createdAt = createdAt;
     }
-
+    public String getOwnerName(){
+        return ownerName;
+    }
+    public void setOwnerName(String ownerName){
+        this.ownerName  = ownerName;
+    }
     public long getId() {
         return id;
     }

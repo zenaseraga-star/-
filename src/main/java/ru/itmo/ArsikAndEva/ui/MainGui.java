@@ -50,7 +50,7 @@ public class MainGui extends Application {
             return;
         }
 
-        primaryStage.setTitle("Система управления лабораторией");
+        primaryStage.setTitle("Система управления лабораторией" + sessionManager.getCurrentUser().getLogin());
 
 //        loadDataOnStart();
 

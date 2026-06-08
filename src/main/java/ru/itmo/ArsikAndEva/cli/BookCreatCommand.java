@@ -64,7 +64,16 @@ public class BookCreatCommand implements Command {
                     System.out.println("Введите время конца правильно!");
                 }
             }
-            long bookId = bookingManager.createBook(instrumentId, startAt, endAt, sessionManager.getCurrentUser().getUsId());
+            String ownerName = null;
+            while (ownerName==null){
+                try{
+                    ownerName = scanner.nextLine().trim();
+                }
+                catch (IllegalArgumentException e){
+                    System.out.println("Введите имя правильно");
+                }
+            }
+            long bookId = bookingManager.createBook(instrumentId, startAt, endAt, sessionManager.getCurrentUser().getUsId(), ownerName);
             System.out.println(" OK book_id =" + bookId);
 
         } catch (NumberFormatException e) {
