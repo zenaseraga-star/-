@@ -2,3 +2,4 @@ out/
 .idea/
 *.iml
 target/
+config/db.properties

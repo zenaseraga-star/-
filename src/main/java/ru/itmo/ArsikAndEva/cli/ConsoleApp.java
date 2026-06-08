@@ -1,10 +1,14 @@
 package ru.itmo.ArsikAndEva.cli;
 
+import ru.itmo.ArsikAndEva.db.BookingRepository;
+import ru.itmo.ArsikAndEva.db.CheckoutRepository;
+import ru.itmo.ArsikAndEva.db.InstrumentRepository;
+import ru.itmo.ArsikAndEva.db.UserRepository;
 import ru.itmo.ArsikAndEva.manager.BookingManager;
 import ru.itmo.ArsikAndEva.manager.CheckoutManager;
 import ru.itmo.ArsikAndEva.manager.InstrumentManager;
-import ru.itmo.ArsikAndEva.storage.FileStorage;
-import ru.itmo.ArsikAndEva.storage.UserStorage;
+//import ru.itmo.ArsikAndEva.storage.FileStorage;
+//import ru.itmo.ArsikAndEva.storage.UserStorage;
 import ru.itmo.ArsikAndEva.users.*;
 
 import java.util.HashMap;
@@ -19,18 +23,18 @@ public class ConsoleApp {
     private final InstrumentManager instrumentManager;
     private final CheckoutManager checkoutManager;
     private final UserManager userManager;
-    private final FileStorage storage;
+//    private final FileStorage storage;
     private final SessionManager sessionManager;
 
 
     public ConsoleApp() {
         this.scanner = new Scanner(System.in);
-        this.instrumentManager = new InstrumentManager();
-        this.bookingManager = new BookingManager(instrumentManager);
-        this.checkoutManager = new CheckoutManager(instrumentManager);
-        this.storage = new FileStorage("data.ser");
+        this.instrumentManager = new InstrumentManager(new InstrumentRepository());
+        this.bookingManager = new BookingManager(instrumentManager, new BookingRepository());
+        this.checkoutManager = new CheckoutManager(instrumentManager, new CheckoutRepository());
+//        this.storage = new FileStorage("data.ser");
         this.sessionManager = new SessionManager();
-        this.userManager = new UserManager(new UserStorage("users.ser"));
+        this.userManager = new UserManager(new UserRepository());
 
 
         commands = new HashMap<>();
@@ -46,8 +50,9 @@ public class ConsoleApp {
         commands.put("checkout_show", new CheckoutShowCommand(checkoutManager));
         commands.put("inst_add", new InstAddCommand(instrumentManager,sessionManager));
         commands.put("help", new HelpCommand());
-        commands.put("save", new SaveCommand(scanner, bookingManager, instrumentManager,checkoutManager, sessionManager, storage ));
-        commands.put("load", new LoadCommand(scanner, bookingManager, checkoutManager, instrumentManager));
+//        commands.put("save", new SaveCommand(scanner, bookingManager, instrumentManager,checkoutManager, sessionManager, storage ));
+//        commands.put("load", new LoadCommand(scanner, bookingManager, checkoutManager, instrumentManager));
+//
         commands.put("login", new CommandLogin(scanner, userManager, sessionManager));
         commands.put("register", new CommandRegister(scanner, userManager, sessionManager ));
         commands.put("logout", new ExitUserCommand(sessionManager));

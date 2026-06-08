@@ -1,5 +1,6 @@
 package ru.itmo.ArsikAndEva.ui.tab;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -16,6 +17,7 @@ import ru.itmo.ArsikAndEva.model.enums.InstrumentType;
 import ru.itmo.ArsikAndEva.ui.alert.AlertService;
 import ru.itmo.ArsikAndEva.ui.dialog.InstrumentDialog;
 import ru.itmo.ArsikAndEva.users.SessionManager;
+import ru.itmo.ArsikAndEva.users.UserManager;
 
 import java.util.Optional;
 
@@ -25,11 +27,13 @@ public class InstrumentTab extends VBox {
     private final TableView<Instrument> table = new TableView<>();
     private final ObservableList<Instrument> data = FXCollections.observableArrayList();
     private final SessionManager sessionManager;
+    private final UserManager userManager;
 
 
-    public InstrumentTab(InstrumentManager instrumentManager, SessionManager sessionManager) {
+    public InstrumentTab(InstrumentManager instrumentManager, SessionManager sessionManager, UserManager userManager) {
         this.instrumentManager = instrumentManager;
         this.sessionManager = sessionManager;
+        this.userManager = userManager;
 
         setSpacing(10);
         setPadding(new Insets(10));
@@ -43,6 +47,7 @@ public class InstrumentTab extends VBox {
 
     private void setupTable(){
         VBox.setVgrow(table, Priority.ALWAYS);
+
         TableColumn<Instrument, Long> idCol = new TableColumn<>("ID");
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
 
@@ -55,7 +60,10 @@ public class InstrumentTab extends VBox {
         TableColumn<Instrument, InstrumentStatus> statusCol = new TableColumn<>("Статус");
         statusCol.setCellValueFactory(new PropertyValueFactory("status"));
 
-        table.getColumns().addAll(idCol, nameCol, typeCol, statusCol);
+        TableColumn<Instrument, String> ownerCol = new TableColumn<>("Owner");
+        ownerCol.setCellValueFactory(cell -> new SimpleStringProperty(userManager.getLoginById(cell.getValue().getOwnerId())));
+
+        table.getColumns().addAll(idCol, nameCol, typeCol, statusCol, ownerCol);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         table.setItems(data);
     }
@@ -66,12 +74,20 @@ public class InstrumentTab extends VBox {
         Button addButton = new Button("Добавить");
         Button deleteButton = new Button("Удалить");
 
+        deleteButton.setDisable(true);
+        table.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> deleteButton.setDisable(!isMine(newSel)));
         refreshButton.setOnAction(e -> refreshData());
         addButton.setOnAction(e -> addInstrument());
         deleteButton.setOnAction(e -> deleteSelectedInstrument());
 
 
         return new HBox(10, refreshButton, addButton, deleteButton);
+    }
+
+    private boolean isMine(Instrument inst) {
+        if (inst == null || inst.getOwnerId() == null) return false;
+        Long me = sessionManager.getCurrentUser().getUsId();
+        return inst.getOwnerId().equals(me);
     }
 
     public void refreshData(){
@@ -88,21 +104,24 @@ public class InstrumentTab extends VBox {
     }
 
     private void deleteSelectedInstrument(){
-        Optional<Instrument> selected = Optional.ofNullable(table.getSelectionModel().getSelectedItem());
-        selected.ifPresentOrElse(
-                e -> {
-
-                    boolean del = AlertService.showConfirmation("Подтверждение удаления",
-                            "Вы точно хотите удалить прибор " + e.getName() + " ?");
-
-                    if (!del)
-                        return;
-
-                    instrumentManager.remove(e.getId());
-                    refreshData();
-                    table.getSelectionModel().clearSelection();
-                },
-                () -> AlertService.showError("Ошибка", "Выберите прибор, который хотите удалить!")
-        );
+        Instrument selected = table.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            AlertService.showError("Ошибка", "Выберите прибор, который хотите удалить!");
+            return;
+        }
+        if (!isMine(selected)) {
+            AlertService.showError("Ошибка", "У вас нет прав на удаление этого прибора");
+            return;
+        }
+        boolean del = AlertService.showConfirmation("Подтверждение удаления",
+                "Вы точно хотите удалить прибор " + selected.getName() + " ?");
+        if (!del) return;
+        try {
+            instrumentManager.remove(selected.getId());
+            refreshData();
+            table.getSelectionModel().clearSelection();
+        } catch (RuntimeException ex) {
+            AlertService.showError("Ошибка", ex.getMessage());
+        }
     }
 }

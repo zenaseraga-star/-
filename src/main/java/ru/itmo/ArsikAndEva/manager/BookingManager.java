@@ -1,11 +1,13 @@
 package ru.itmo.ArsikAndEva.manager;
 
+import ru.itmo.ArsikAndEva.db.BookingRepository;
 import ru.itmo.ArsikAndEva.exception.EntityNotFoundException;
 import ru.itmo.ArsikAndEva.exception.ValidationException;
 import ru.itmo.ArsikAndEva.model.Booking;
 import ru.itmo.ArsikAndEva.model.enums.BookingStatus;
 import ru.itmo.ArsikAndEva.validator.BookingValidator;
 
+import java.sql.SQLException;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -13,22 +15,32 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
+
 
 public class BookingManager {
     private final Map<Long, Booking> books = new HashMap<>();
-    private final AtomicLong idCounter = new AtomicLong(1);
     private InstrumentManager instrumentManager;
+    private final BookingRepository repo;
+    private final BookingValidator bookingValidator = new BookingValidator();
 
-    public BookingManager(InstrumentManager instrumentManager) {
+    public BookingManager(InstrumentManager instrumentManager, BookingRepository repo) {
         this.instrumentManager = instrumentManager;
+        this.repo = repo;
+        loadAll();
     }
 
-    private BookingValidator bookingValidator = new BookingValidator();
+    public void loadAll(){
+        try{
+            books.clear();
+            for (Booking b : repo.findAll())
+                books.put(b.getId(), b);
+            } catch (SQLException e){
+            System.out.println("Ошибка загрузки броней из БД: " + e.getMessage());
+        }
+    }
 
     public long createBook(long instrumentId, String startAt, String endAt, Long owner) {
         instrumentManager.getById(instrumentId).orElseThrow(() -> new EntityNotFoundException("Инструмент с таким id не найден"));
-
 
         Instant start = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.systemDefault()).parse(startAt));
         Instant end = Instant.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.systemDefault()).parse(endAt));
@@ -43,17 +55,19 @@ public class BookingManager {
             }
         }
 
-        long newId = idCounter.getAndIncrement();
-        Booking book = new Booking(newId, Instant.now());
-        book.setStartAt(start);
-        book.setEndAt(end);
-        book.setInstrumentId(instrumentId);
-        book.setOwnerId(owner);
-        book.setStatus(BookingStatus.ACTIVE);
+        Instant now = Instant.now();
+        Booking book = new Booking(0, instrumentId, start, end, BookingStatus.ACTIVE, owner, now, now);
         bookingValidator.validate(book);
-        books.put(newId, book);
-        return book.getId();
 
+        try{
+            long id = repo.insert(book);
+            books.put(id, book);
+            return id;
+        } catch (SQLException e) {
+            if (e.getSQLState().equals("23503"))
+                throw new ValidationException("Прибор не найден в базе");
+            throw new RuntimeException("Ошибка БД при создании брони: " + e.getMessage(), e);
+        }
     }
 
     public List<Booking> booklist(long instrumentId, String date) {
@@ -76,11 +90,11 @@ public class BookingManager {
         Booking book = getBookById(bookId);
         if (Instant.now().isBefore(book.getStartAt())) {
             book.setStatus(BookingStatus.CANCELLED);
+            saveToDb(book);
         } else {
             throw new ValidationException("Нельзя отменить начавшуюся бронь");
         }
     }
-
 
     public List<Booking> findByInId(long instrumentId) {
         List<Booking> list = new ArrayList<>();
@@ -101,6 +115,7 @@ public class BookingManager {
         Booking book = getBookById(bookId);
         book.setStartAt(start);
         book.setEndAt(end);
+        saveToDb(book);
     }
 
     public Booking getBookById(long bookId) {
@@ -122,29 +137,34 @@ public class BookingManager {
     }
 
     public void removeBooking(long bookId) {
-        Booking book = getBookById(bookId);
-        books.remove(bookId, book);
+        getBookById(bookId);
+        try{
+            repo.delete(bookId);
+            books.remove(bookId);
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка БД при сохранении брони: " + e.getMessage(), e);
+        }
+    }
+
+    private void saveToDb(Booking book){
+        try{
+            repo.update(book);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public List<Booking> getAll() {
         return new ArrayList<>(books.values());
     }
 
-
-    public  HashMap<Long, Booking> getData(){
-        return new HashMap<>(books);
-    }
-
-    public void loadData(HashMap<Long, Booking> newBookings){
-        this.books.clear();
-        this.books.putAll(newBookings);
-
-        long maxId = newBookings.keySet()
-                .stream()
-                .mapToLong(Long::longValue)
-                .max()
-                .orElse(0);
-        idCounter.set(maxId + 1);
-    }
+//    public  HashMap<Long, Booking> getData(){
+//        return new HashMap<>(books);
+//    }
+//
+//    public void loadData(HashMap<Long, Booking> newBookings){
+//        this.books.clear();
+//        this.books.putAll(newBookings);
+//    }
 
 }

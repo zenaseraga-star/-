@@ -1,4 +1,3 @@
-
 package ru.itmo.ArsikAndEva.ui.tab;
 
 import javafx.collections.FXCollections;
@@ -19,6 +18,7 @@ import ru.itmo.ArsikAndEva.model.enums.BookingStatus;
 import ru.itmo.ArsikAndEva.ui.alert.AlertService;
 import ru.itmo.ArsikAndEva.ui.dialog.BookingDialog;
 import ru.itmo.ArsikAndEva.users.SessionManager;
+import ru.itmo.ArsikAndEva.users.UserManager;
 
 import java.util.Optional;
 
@@ -28,11 +28,14 @@ public class BookingTab extends VBox {
     private final ObservableList<Booking> data = FXCollections.observableArrayList();
     private final InstrumentManager instrumentManager;
     private final SessionManager sessionManager;
+    private final UserManager userManager;
 
-    public BookingTab(BookingManager bookingManager, InstrumentManager instrumentManager, SessionManager sessionManager) {
+    public BookingTab(BookingManager bookingManager, InstrumentManager instrumentManager, SessionManager sessionManager, UserManager userManager) {
         this.bookingManager = bookingManager;
         this.instrumentManager = instrumentManager;
         this.sessionManager = sessionManager;
+        this.userManager = userManager;
+
         setSpacing(10);
         setPadding(new Insets(10));
         setupTable();
@@ -75,16 +78,28 @@ public class BookingTab extends VBox {
         data.setAll(bookingManager.getAll());
     }
 
+    private boolean isMine(Booking b) {
+        if (b == null || b.getOwnerId() == null) return false;
+        return b.getOwnerId().equals(sessionManager.getCurrentUser().getUsId());
+    }
+
     private HBox createButtons() {
         Button refreshButton = new Button("Обновить");
         Button addButton = new Button("Создать");
         Button deleteButton = new Button("Удалить");
         Button reButton = new Button("Перенести");
+
         refreshButton.setOnAction(e -> refreshData());
         addButton.setOnAction(e -> addBook());
+        deleteButton.setDisable(true);
+        reButton.setDisable(true);
+        table.getSelectionModel().selectedItemProperty().addListener((obs, o, sel) -> {
+            boolean mine = isMine(sel);
+            deleteButton.setDisable(!mine);
+            reButton.setDisable(!mine);
+        });
         deleteButton.setOnAction(e -> delSelectedBooking());
         reButton.setOnAction(e -> reSelectedBooking());
-
 
         return new HBox(10, refreshButton, addButton, deleteButton, reButton);
     }
@@ -95,32 +110,37 @@ public class BookingTab extends VBox {
     }
 
     private void delSelectedBooking() {
-        Optional<Booking> selectedBook = Optional.ofNullable(table.getSelectionModel().getSelectedItem());
-        selectedBook.ifPresentOrElse(e -> {
-                    boolean del = AlertService.showConfirmation("Подтверждение удаления", "Вы точно хотите удалить бронь?");
-
-                    if (!del)
-                        return;
-
-                    bookingManager.removeBooking(e.getId());
-                    refreshData();
-                    table.getSelectionModel().clearSelection();
-                    refreshData();
-                },
-                () -> AlertService.showError("Ошибка", "Выберете бронь, которую хотите удалить "));
+        Booking selected = table.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            AlertService.showError("Ошибка", "Выберите бронь, которую хотите удалить");
+            return;
+        }
+        if (!isMine(selected)) {
+            AlertService.showError("Ошибка", "У вас нет прав на изменение этой брони");
+            return;
+        }
+        boolean del = AlertService.showConfirmation("Подтверждение удаления", "Вы точно хотите удалить бронь?");
+        if (!del) return;
+        bookingManager.removeBooking(selected.getId());
+        refreshData();
+        table.getSelectionModel().clearSelection();
     }
 
     private void reSelectedBooking() {
-        Optional<Booking> selectedBook = Optional.ofNullable(table.getSelectionModel().getSelectedItem());
-        selectedBook.ifPresentOrElse(e -> {
-                    if (e.getStatus() != BookingStatus.ACTIVE) {
-                        AlertService.showError("Ошибка", "Можно переносить только активные бронирования");
-                        return;
-                    }
-                    boolean success = BookingDialog.showRechDialog(e, bookingManager);
-
-                },
-                () -> AlertService.showError("Ошибка", "Выберите бронирование для переноса")
-        );
+        Booking selected = table.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            AlertService.showError("Ошибка", "Выберите бронирование для переноса");
+            return;
+        }
+        if (!isMine(selected)) {
+            AlertService.showError("Ошибка", "У вас нет прав на изменение этой брони");
+            return;
+        }
+        if (selected.getStatus() != BookingStatus.ACTIVE) {
+            AlertService.showError("Ошибка", "Можно переносить только активные бронирования");
+            return;
+        }
+        BookingDialog.showRechDialog(selected, bookingManager);
+        refreshData();
     }
 }

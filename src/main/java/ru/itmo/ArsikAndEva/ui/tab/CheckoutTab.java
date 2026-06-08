@@ -1,5 +1,6 @@
 package ru.itmo.ArsikAndEva.ui.tab;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -16,6 +17,7 @@ import ru.itmo.ArsikAndEva.model.enums.ReturnCondition;
 import ru.itmo.ArsikAndEva.ui.alert.AlertService;
 import ru.itmo.ArsikAndEva.ui.dialog.CheckoutDialog;
 import ru.itmo.ArsikAndEva.users.SessionManager;
+import ru.itmo.ArsikAndEva.users.UserManager;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -26,19 +28,18 @@ public class CheckoutTab extends VBox {
     private final TableView<Checkout> table = new TableView<>();
     private final ObservableList<Checkout> data = FXCollections.observableArrayList();
     private final SessionManager sessionManager;
+    private final UserManager userManager;
 
-    public CheckoutTab(CheckoutManager checkoutManager, InstrumentManager instrumentManager, SessionManager sessionManager) {
+    public CheckoutTab(CheckoutManager checkoutManager, InstrumentManager instrumentManager, SessionManager sessionManager, UserManager userManager) {
         this.checkoutManager = checkoutManager;
         this.instrumentManager = instrumentManager;
         this.sessionManager = sessionManager;
+        this.userManager = userManager;
 
         setSpacing(10);
         setPadding(new Insets(10));
-
         setupTable();
-
         getChildren().addAll(new Label("Список выдач:"), table, createButtons());
-
         refreshData();
     }
 
@@ -61,9 +62,9 @@ public class CheckoutTab extends VBox {
 
         TableColumn<Checkout, String> instName = new TableColumn<>("Название прибора");
         instName.setCellValueFactory(e -> {
-            long idIns = e.getValue().getId();
-            String name = instrumentManager.getById(idIns).map(Instrument::getName).orElse("Не найден.");
-            return new javafx.beans.property.SimpleStringProperty(name);
+            long instrId = e.getValue().getInstrumentId();
+            String name = instrumentManager.getById(instrId).map(Instrument::getName).orElse("Не найден.");
+            return new SimpleStringProperty(name);
         });
 
         table.getColumns().addAll(idCol, usernameCol, instIdCol, instName, takenCol, returnedCol);
@@ -77,6 +78,14 @@ public class CheckoutTab extends VBox {
         Button returnButton = new Button("Вернуть");
         Button deleteButton = new Button("Удалить");
 
+        returnButton.setDisable(true);
+        deleteButton.setDisable(true);
+        table.getSelectionModel().selectedItemProperty().addListener((obs, o, sel) -> {
+            boolean mine = isMine(sel);
+            returnButton.setDisable(!mine);
+            deleteButton.setDisable(!mine);
+        });
+
         refreshButton.setOnAction(e -> refreshData());
         addButton.setOnAction(e -> addCheckout());
         returnButton.setOnAction(e -> handleReturn());
@@ -85,14 +94,18 @@ public class CheckoutTab extends VBox {
         return new HBox(10, refreshButton, addButton, returnButton, deleteButton);
     }
 
-    public void refreshData() {
+    private boolean isMine(Checkout c) {
+        if (c == null || c.getOwnerId() == null) return false;
+        return c.getOwnerId().equals(sessionManager.getCurrentUser().getUsId());
+    }
+
+    public void refreshData()
+    {
         data.setAll(checkoutManager.getAll());
     }
 
     private void addCheckout() {
-        Optional<Checkout> checkout = CheckoutDialog.showAddDialog(instrumentManager, sessionManager);
-
-        checkout.ifPresent(chk -> {
+        CheckoutDialog.showAddDialog(instrumentManager, sessionManager).ifPresent(chk -> {
             try {
                 checkoutManager.add(chk);
                 refreshData();
@@ -104,13 +117,21 @@ public class CheckoutTab extends VBox {
 
     private void deleteSelectedCheckout() {
         Checkout selected = table.getSelectionModel().getSelectedItem();
-        if (selected != null) {
+        if (selected == null) {
+            AlertService.showWarning("Внимание", "Выберите запись для удаления");
+            return;
+        }
+        if (!isMine(selected)) {
+            AlertService.showError("Ошибка", "У вас нет прав на удаление этой выдачи");
+            return;
+        }
+        try {
             checkoutManager.remove(selected.getId());
             refreshData();
             table.getSelectionModel().clearSelection();
             table.refresh();
-        } else {
-            AlertService.showWarning("Внимание", "Выберите запись для удаления");
+        } catch (Exception e) {
+            AlertService.showError("Ошибка", e.getMessage());
         }
     }
 
@@ -118,6 +139,11 @@ public class CheckoutTab extends VBox {
         Checkout selected = table.getSelectionModel().getSelectedItem();
         if (selected == null) {
             AlertService.showWarning("Внимание", "Выберите запись для возврата");
+            return;
+        }
+
+        if (!isMine(selected)) {
+            AlertService.showError("Ошибка", "У вас нет прав на возврат этой выдачи");
             return;
         }
 

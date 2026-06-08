@@ -27,9 +27,9 @@ public final class Booking implements Serializable {
     // Когда создали бронь. Программа ставит автоматически.
     private final Instant createdAt;
     // Когда обновляли. Программа обновляет автоматически.
-    private  Instant updatedAt;
+    private Instant updatedAt;
 
-    public Booking( long id, long instrumentId,  Instant startAt, Instant endAt, BookingStatus status, Long ownerId, Instant createdAt, Instant updatedAt){
+    public Booking(long id, long instrumentId, Instant startAt, Instant endAt, BookingStatus status, Long ownerId, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.instrumentId = instrumentId;
         this.startAt = startAt;
@@ -41,7 +41,7 @@ public final class Booking implements Serializable {
     }
 
 
-    public Booking(long id, Instant createdAt){
+    public Booking(long id, Instant createdAt) {
         this.id = id;
         this.createdAt = createdAt;
     }
@@ -101,24 +101,32 @@ public final class Booking implements Serializable {
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
-public String getFormattedStart(){
-    DateTimeFormatter form = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault());
-    String formattedStart = form.format(startAt);
-    BookingValidator.validateTime(formattedStart);
-   return  formattedStart;
-}
-public String getFormattedEnd() {
-    DateTimeFormatter form = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault());
-    String formattedEnd = form.format(endAt);
-    BookingValidator.validateTime(formattedEnd);
-    return formattedEnd;
-}
+
+    public String getFormattedStart() {
+        DateTimeFormatter form = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault());
+        String formattedStart = form.format(startAt);
+        BookingValidator.validateTime(formattedStart);
+        return formattedStart;
+    }
+
+    public String getFormattedEnd() {
+        DateTimeFormatter form = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault());
+        String formattedEnd = form.format(endAt);
+        BookingValidator.validateTime(formattedEnd);
+        return formattedEnd;
+    }
+
     public String getFormattedCr() {
         DateTimeFormatter form = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault());
         String formatedCr = form.format(createdAt);
         BookingValidator.validateTime(formatedCr);
         return formatedCr;
     }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

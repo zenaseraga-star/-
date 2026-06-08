@@ -1,80 +1,75 @@
 package ru.itmo.ArsikAndEva.users;
 
+import ru.itmo.ArsikAndEva.db.UserRepository;
 import ru.itmo.ArsikAndEva.exception.ValidationException;
-import ru.itmo.ArsikAndEva.storage.UserStorage;
 import ru.itmo.ArsikAndEva.validator.UserValidator;
 
-import java.io.*;
+import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class UserManager {
     private final HashMap<Long, User> idUs = new HashMap<>();
     private final HashMap<String, User> logUs = new HashMap<>();
-    private final AtomicLong idCounter = new AtomicLong(1);
-    private final UserStorage storage;
-    UserValidator userValidator = new UserValidator();
+    private final UserRepository repo;
+    private final UserValidator userValidator = new UserValidator();
 
-    public UserManager(UserStorage storage) {
-        this.storage = storage;
+    public UserManager(UserRepository repo) {
+        this.repo = repo;
         loadUsers();
     }
-private void saveUsers(){
-    try {
-        storage.save(idUs);
-    } catch (IOException e) {
-        System.out.println("Ошибка при сохранении" + e.getMessage());
-    }
-}
-private void loadUsers(){
+
+    private void loadUsers() {
         try {
-            HashMap<Long, User> users = storage.load();
             idUs.clear();
             logUs.clear();
-            for (User us : users.values()) {
-                userValidator.validate(us);
+            for (User us : repo.findAll()) {
                 idUs.put(us.getUsId(), us);
                 logUs.put(us.getLogin(), us);
-                if (us.getUsId() >= idCounter.get()) {
-                    idCounter.set(us.getUsId() + 1);
+            }
+        } catch (SQLException e) {
+            System.out.println("Ошибка загрузки пользователей из БД: " + e.getMessage());
+        }
+    }
+
+        public User register(String login, String password) {
+            if (logUs.containsKey(login)) {
+                throw new ValidationException("Имя занято");
+            }
+            try {
+                String hash = Hash.HashPass(password);
+                long id = repo.insert(login, hash);
+                User user = new User(login, hash, id);
+                idUs.put(id, user);
+                logUs.put(login, user);
+                return user;
+            } catch (SQLException e) {
+                if (e.getSQLState().equals("23505")) {
+                    throw new ValidationException("Имя занято");
                 }
-
+                throw new RuntimeException("Ошибка БД при регистрации: " + e.getMessage());
             }
         }
-        catch (FileNotFoundException e) {
-            System.out.println("Файл не найден");
-        }
-        catch (InvalidObjectException | OptionalDataException | StreamCorruptedException | ClassNotFoundException e){
-                System.out.println("Файл поврежден");
-            }
-        catch (IOException e) {
-            System.out.println("Ошибка при загрузке"+ e.getMessage());
-        }
-}
-    public User register(String login, String password) {
-    if (isLoginExist(login)) {
-throw new ValidationException("Имя занято");
-    } else {
-        long newId = idCounter.getAndIncrement();
-        User user = new User(login, Hash.HashPass(password), newId);
-        idUs.put(newId, user);
-        logUs.put(login, user);
-        saveUsers();
-        return  user;
-    }
-}
-    public boolean isLoginExist(String login) {
-        return logUs.containsKey(login);
 
-    }
-    public User login(String login, String password){
-    User user = logUs.get(login);
-    if(user == null){
-        throw new ValidationException("Пользователь не найден");
-    }
-    if(user.checkPassword(password)) {return user;}
-    throw new ValidationException("Неверный пароль");
+        public boolean isLoginExist(String login){
+            return logUs.containsKey(login);
+        }
+
+        public User login (String login, String password){
+            User user = logUs.get(login);
+            if (user == null) {
+                throw new ValidationException("Пользователь не найден");
+            }
+
+            if (user.checkPassword(password)) {
+                return user;
+            }
+            throw new ValidationException("Неверный пароль");
+        }
+
+    public String getLoginById(Long id) {
+        if (id == null) return "—";
+        User u = idUs.get(id);
+        return (u != null) ? u.getLogin() : "—";
     }
 }
 
