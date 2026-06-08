@@ -1,0 +1,137 @@
+package ru.itmo.ArsikAndEva.ui.dialog;
+
+import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
+import ru.itmo.ArsikAndEva.manager.InstrumentManager;
+import ru.itmo.ArsikAndEva.model.Instrument;
+import ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
+import ru.itmo.ArsikAndEva.model.enums.InstrumentType;
+import ru.itmo.ArsikAndEva.ui.alert.AlertService;
+import ru.itmo.ArsikAndEva.users.SessionManager;
+
+import java.util.Optional;
+
+public class InstrumentDialog {
+    private final SessionManager sessionManager;
+
+    public InstrumentDialog(SessionManager sessionManager) {
+        this.sessionManager = sessionManager;
+    }
+
+
+    private static GridPane createForm(TextField nameField, ComboBox<InstrumentType> typeBox,
+                                       TextField inventoryNumberField, TextField locationField,
+                                       ComboBox<InstrumentStatus> statusBox){
+        GridPane gridPane = new GridPane();
+
+        gridPane.setPadding(new Insets(10));
+        gridPane.setVgap(10);
+        gridPane.setHgap(10);
+
+        gridPane.addRow(0, new Label("Название прибора:"), nameField);
+        gridPane.addRow(1, new Label("Тип прибора:"), typeBox);
+        gridPane.addRow(2, new Label("Инвентарный номер:"), inventoryNumberField);
+        gridPane.addRow(3, new Label("Локация:"), locationField);
+        gridPane.addRow(4, new Label("Статус:"), statusBox);
+
+        return gridPane;
+    }
+
+    public static Optional<Instrument> showAddDialog(InstrumentManager instrumentManager, SessionManager sessionManager) {
+        Dialog<Instrument> instrumentDialog = new Dialog<>();
+        instrumentDialog.setTitle("Окно добавления прибора");
+        instrumentDialog.setHeaderText("Информация о приборе");
+
+        ButtonType addButton = new ButtonType("Добавить", ButtonBar.ButtonData.OK_DONE);
+        instrumentDialog.getDialogPane().getButtonTypes().addAll(addButton, ButtonType.CANCEL);
+
+        TextField nameField = new TextField();
+        TextField inventoryNumberField = new TextField();
+        TextField locationField = new TextField();
+
+        ComboBox<InstrumentType> typeBox = new ComboBox<>();
+        ComboBox<InstrumentStatus> statusBox = new ComboBox<>();
+
+        typeBox.getItems().addAll(InstrumentType.values());
+
+        statusBox.getItems().addAll(InstrumentStatus.values());
+
+        GridPane form = createForm(
+                nameField,
+                typeBox,
+                inventoryNumberField,
+                locationField,
+                statusBox
+        );
+
+        instrumentDialog.getDialogPane().setContent(form);
+
+        Instrument[] createdInstrument = new Instrument[1];
+
+        Button actualButton = (Button) instrumentDialog.getDialogPane().lookupButton(addButton);
+        actualButton.addEventFilter(ActionEvent.ACTION, event -> {
+            String name = nameField.getText().trim();
+            String inventoryNumber = inventoryNumberField.getText().trim();
+            String location = locationField.getText().trim();
+
+            InstrumentType type = typeBox.getValue();
+            InstrumentStatus status = statusBox.getValue();
+
+            if (name.isBlank()) {
+                AlertService.showError("Ошибка.", "Название прибора не может быть пустым!");
+                event.consume();
+                return;
+            }
+
+            if (inventoryNumber.isBlank()){
+                AlertService.showError("Ошибка.", "Инвентарный номер должен быть заполнен!");
+                event.consume();
+                return;
+            }
+
+            if (location.isBlank()){
+                AlertService.showError("Ошибка.", "Напишите где находится прибор!");
+                event.consume();
+                return;
+            }
+
+            if (type == null){
+                AlertService.showError("Ошибка.", "Выберите тип прибора!");
+                event.consume();
+                return;
+            }
+
+            if (status == null){
+                AlertService.showError("Ошибка.", "Выберите статус прибора!");
+                event.consume();
+                return;
+            }
+            try {
+                Instrument instrument = new Instrument(
+                        name,
+                        type,
+                        inventoryNumber,
+                        location,
+                        status,
+                        sessionManager.getCurrentUser().getUsId()
+                );
+                instrumentManager.add(instrument);
+                createdInstrument[0] = instrument;
+            } catch (RuntimeException ex) {
+                AlertService.showError("Ошибка", "Не удалось добавить прибор: " + ex.getMessage());
+                event.consume();
+            }
+        });
+
+        instrumentDialog.setResultConverter(button -> {
+            if (button == addButton){
+                return createdInstrument[0];
+            }
+            return null;
+        });
+
+        return instrumentDialog.showAndWait();
+    }
+}

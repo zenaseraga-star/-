@@ -1,4 +1,5 @@
 out/
 .idea/
 *.iml
-*.class
+target/
+config/db.properties
