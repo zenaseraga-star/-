@@ -42,7 +42,8 @@ public class UserRepository {
         try (Connection c = Database.getConnection();
              PreparedStatement ps = c.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) result.add(map(rs));
+            while (rs.next())
+                result.add(map(rs));
         }
         return result;
     }

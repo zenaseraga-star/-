@@ -21,8 +21,6 @@ public class BookingValidator implements Validator<Booking> {
         if(booking.getStartAt().isAfter(booking.getEndAt())){
             throw new ValidationException(" Время начала брони не может быть после конца");
         }
-
-
     }
     static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     public static boolean isValidate(String date){
@@ -37,6 +35,7 @@ public class BookingValidator implements Validator<Booking> {
             return false;
         }
     }
+
     public static void validateTime(String time){
         if(!isValidate(time)){
             throw new ValidationException( " неверный формат даты ");

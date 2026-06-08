@@ -91,16 +91,14 @@ public class InstrumentTab extends VBox {
     }
 
     public void refreshData(){
+        instrumentManager.loadAll();
         data.setAll(instrumentManager.getAll());
     }
 
     private void addInstrument(){
-        Optional<Instrument> instrument = InstrumentDialog.showAddDialog(sessionManager);
+        Optional<Instrument> instrument = InstrumentDialog.showAddDialog(instrumentManager, sessionManager);
 
-        instrument.ifPresent(inst -> {
-            instrumentManager.add(inst);
-            refreshData();
-        });
+        instrument.ifPresent(inst -> refreshData());
     }
 
     private void deleteSelectedInstrument(){

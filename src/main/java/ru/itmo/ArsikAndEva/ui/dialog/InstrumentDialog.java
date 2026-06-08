@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import ru.itmo.ArsikAndEva.manager.InstrumentManager;
 import ru.itmo.ArsikAndEva.model.Instrument;
 import ru.itmo.ArsikAndEva.model.enums.InstrumentStatus;
 import ru.itmo.ArsikAndEva.model.enums.InstrumentType;
@@ -38,7 +39,7 @@ public class InstrumentDialog {
         return gridPane;
     }
 
-    public static Optional<Instrument> showAddDialog(SessionManager sessionManager) {
+    public static Optional<Instrument> showAddDialog(InstrumentManager instrumentManager, SessionManager sessionManager) {
         Dialog<Instrument> instrumentDialog = new Dialog<>();
         instrumentDialog.setTitle("Окно добавления прибора");
         instrumentDialog.setHeaderText("Информация о приборе");
@@ -66,6 +67,8 @@ public class InstrumentDialog {
         );
 
         instrumentDialog.getDialogPane().setContent(form);
+
+        Instrument[] createdInstrument = new Instrument[1];
 
         Button actualButton = (Button) instrumentDialog.getDialogPane().lookupButton(addButton);
         actualButton.addEventFilter(ActionEvent.ACTION, event -> {
@@ -105,19 +108,26 @@ public class InstrumentDialog {
                 event.consume();
                 return;
             }
+            try {
+                Instrument instrument = new Instrument(
+                        name,
+                        type,
+                        inventoryNumber,
+                        location,
+                        status,
+                        sessionManager.getCurrentUser().getUsId()
+                );
+                instrumentManager.add(instrument);
+                createdInstrument[0] = instrument;
+            } catch (RuntimeException ex) {
+                AlertService.showError("Ошибка", "Не удалось добавить прибор: " + ex.getMessage());
+                event.consume();
+            }
         });
 
         instrumentDialog.setResultConverter(button -> {
             if (button == addButton){
-                return new Instrument(
-                        nameField.getText().trim(),
-                        typeBox.getValue(),
-                        inventoryNumberField.getText().trim(),
-                        locationField.getText().trim(),
-                        statusBox.getValue(),
-                        sessionManager.getCurrentUser().getUsId()
-
-                );
+                return createdInstrument[0];
             }
             return null;
         });

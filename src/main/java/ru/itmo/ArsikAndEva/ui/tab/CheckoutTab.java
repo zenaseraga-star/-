@@ -57,7 +57,7 @@ public class CheckoutTab extends VBox {
         TableColumn<Checkout, Instant> takenCol = new TableColumn<>("Взят");
         takenCol.setCellValueFactory(new PropertyValueFactory<>("takenAt"));
 
-        TableColumn<Checkout, Instant> returnedCol = new TableColumn<>("Вернут");
+        TableColumn<Checkout, Instant> returnedCol = new TableColumn<>("Возвращен");
         returnedCol.setCellValueFactory(new PropertyValueFactory<>("returnedAt"));
 
         TableColumn<Checkout, String> instName = new TableColumn<>("Название прибора");
@@ -101,6 +101,8 @@ public class CheckoutTab extends VBox {
 
     public void refreshData()
     {
+        instrumentManager.loadAll();
+        checkoutManager.loadAll();
         data.setAll(checkoutManager.getAll());
     }
 

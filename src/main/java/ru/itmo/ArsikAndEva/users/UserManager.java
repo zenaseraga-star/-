@@ -25,6 +25,7 @@ public class UserManager {
             for (User us : repo.findAll()) {
                 idUs.put(us.getUsId(), us);
                 logUs.put(us.getLogin(), us);
+                userValidator.validate(us);
             }
         } catch (SQLException e) {
             System.out.println("Ошибка загрузки пользователей из БД: " + e.getMessage());

@@ -75,6 +75,8 @@ public class BookingTab extends VBox {
     }
 
     public void refreshData() {
+        instrumentManager.loadAll();
+        bookingManager.loadAll();
         data.setAll(bookingManager.getAll());
     }
 
