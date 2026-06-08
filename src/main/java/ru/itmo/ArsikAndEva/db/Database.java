@@ -35,8 +35,7 @@ public final class Database {
                 user = props.getProperty("db.user");
                 password = props.getProperty("db.password");
             } catch (IOException e) {
-                throw new IllegalStateException(
-                        "Не удалось прочитать config/db.properties. ", e);
+                throw new IllegalStateException("Не удалось прочитать config/db.properties. ", e);
             }
         }
 

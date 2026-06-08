@@ -15,8 +15,8 @@ import java.util.List;
 public class BookingRepository {
 
     public long insert(Booking b) throws SQLException {
-        String sql = "INSERT INTO bookings (instrument_id, start_at, end_at, status, owner_id) "
-                + "VALUES (?, ?, ?, ?, ?) RETURNING id";
+        String sql = "INSERT INTO bookings (instrument_id, start_at, end_at, status, owner_id, owner_name) "
+                + "VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
         try (Connection c = Database.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setLong(1, b.getInstrumentId());
@@ -25,6 +25,7 @@ public class BookingRepository {
             ps.setString(4, b.getStatus().name());
             if (b.getOwnerId() != null) ps.setLong(5, b.getOwnerId());
             else ps.setNull(5, Types.BIGINT);
+            ps.setString(6, b.getOwnerName());
             try (ResultSet rs = ps.executeQuery()) {
                 rs.next();
                 return rs.getLong("id");
@@ -45,7 +46,7 @@ public class BookingRepository {
 
     public void update(Booking b) throws SQLException {
         String sql = "UPDATE bookings "
-                + "SET instrument_id = ?, start_at = ?, end_at = ?, status = ?, owner_id = ?, updated_at = now() "
+                + "SET instrument_id = ?, start_at = ?, end_at = ?, status = ?, owner_id = ?, owner_name = ?, updated_at = now() "
                 + "WHERE id = ?";
         try (Connection c = Database.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
@@ -55,7 +56,8 @@ public class BookingRepository {
             ps.setString(4, b.getStatus().name());
             if (b.getOwnerId() != null) ps.setLong(5, b.getOwnerId());
             else ps.setNull(5, Types.BIGINT);
-            ps.setLong(6, b.getId());
+            ps.setString(6, b.getOwnerName());
+            ps.setLong(7, b.getId());
             ps.executeUpdate();
         }
     }
@@ -78,7 +80,8 @@ public class BookingRepository {
                 BookingStatus.valueOf(rs.getString("status")),
                 (Long) rs.getObject("owner_id"),
                 rs.getTimestamp("created_at").toInstant(),
-                upd != null ? upd.toInstant() : null
+                upd != null ? upd.toInstant() : null,
+                rs.getString("owner_name")
         );
     }
 }

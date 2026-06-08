@@ -49,6 +49,7 @@ create table if not exists bookings
             check (status = ANY (ARRAY ['ACTIVE'::text, 'CANCELLED'::text])),
     owner_id      bigint
         references users,
+    owner_name    varchar(128),
     created_at    timestamp with time zone default now() not null,
     updated_at    timestamp with time zone,
     constraint bookings_check

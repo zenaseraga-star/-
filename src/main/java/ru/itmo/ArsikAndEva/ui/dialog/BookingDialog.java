@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import ru.itmo.ArsikAndEva.exception.ValidationException;
 import ru.itmo.ArsikAndEva.manager.BookingManager;
 import ru.itmo.ArsikAndEva.manager.InstrumentManager;
 import ru.itmo.ArsikAndEva.model.Booking;
@@ -170,12 +171,17 @@ public class BookingDialog {
                     try {
                         BookingValidator.validateTime(startDateTimeStr);
                         BookingValidator.validateTime(endDateTimeStr);
-                        createdBookId[0] = bookingManager.createBook(instrument.getId(), startDateTimeStr, endDateTimeStr, sessionManager.getCurrentUser().getUsId(), owner);
+
                     } catch (Exception e) {
                         AlertService.showError("Ошибка", "Неверный формат даты");
                         event.consume();
                     }
-                });
+                    try {
+                        createdBookId[0] = bookingManager.createBook(instrument.getId(), startDateTimeStr, endDateTimeStr, sessionManager.getCurrentUser().getUsId(), owner);
+                    }
+        catch (ValidationException e){
+                    AlertService.showError("Ошибка", e.getMessage());}
+        });
 
             bookingDialog.setResultConverter(button -> {
                 if (button == addButton) {
